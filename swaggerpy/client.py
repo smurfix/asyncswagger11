@@ -55,6 +55,7 @@ class Operation(object):
         method = self.json['httpMethod']
         uri = self.uri
         params = {}
+        data = None
         for param in self.json.get('parameters', []):
             pname = param['name']
             value = kwargs.get(pname)
@@ -63,10 +64,15 @@ class Operation(object):
                 value = ",".join(value)
 
             if value is not None:
+                print param
                 if param['paramType'] == 'path':
                     uri = uri.replace('{%s}' % pname, str(value))
                 elif param['paramType'] == 'query':
                     params[pname] = value
+                elif param['paramType'] == 'body':
+                    if not data:
+                        data = {}
+                    data[pname] = value
                 else:
                     raise AssertionError(
                         "Unsupported paramType %s" %
@@ -88,7 +94,7 @@ class Operation(object):
             return self.http_client.ws_connect(uri, params=params)
         else:
             return self.http_client.request(
-                method, uri, params=params)
+                method, uri, params=params, data=data)
 
 
 class Resource(object):
