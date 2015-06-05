@@ -7,8 +7,8 @@
 
 import json
 import os
-import urllib
-import urlparse
+import six
+import six.moves.urllib as urllib
 
 from swaggerpy.http_client import SynchronousHttpClient
 from swaggerpy.processors import SwaggerProcessor, SwaggerError
@@ -110,10 +110,14 @@ def json_load_url(http_client, url):
     :param url: URL for JSON to parse
     :return: Parsed JSON dict
     """
-    scheme = urlparse.urlparse(url).scheme
+    scheme = urllib.parse.urlparse(url).scheme
     if scheme == 'file':
         # requests can't handle file: URLs
-        fp = urllib.urlopen(url)
+        fp = urllib.request.urlopen(url)
+        if six.PY3:
+            import codecs
+            reader = codecs.getreader(fp.info().get_content_charset('utf-8'))
+            fp = reader(fp)
         try:
             return json.load(fp)
         finally:
@@ -184,7 +188,7 @@ class Loader(object):
         :param api_dict: api object from resource listing.
         """
         path = api_dict.get('path').replace('{format}', 'json')
-        api_dict['url'] = urlparse.urljoin(base_url + '/', path.strip('/'))
+        api_dict['url'] = urllib.parse.urljoin(base_url + '/', path.strip('/'))
         api_dict['api_declaration'] = json_load_url(
             self.http_client, api_dict['url'])
 
@@ -224,10 +228,11 @@ def load_file(resource_listing_file, http_client=None, processors=None):
     :raise: IOError: On error reading api-docs.
     """
     file_path = os.path.abspath(resource_listing_file)
-    url = urlparse.urljoin('file:', urllib.pathname2url(file_path))
+    url = urllib.parse.urljoin('file:', urllib.request.pathname2url(file_path))
     # When loading from files, everything is relative to the resource listing
     dir_path = os.path.dirname(file_path)
-    base_url = urlparse.urljoin('file:', urllib.pathname2url(dir_path))
+    base_url = urllib.parse.urljoin('file:',
+                                    urllib.request.pathname2url(dir_path))
     return load_url(url, http_client=http_client, processors=processors,
                     base_url=base_url)
 

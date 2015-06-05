@@ -9,7 +9,7 @@ import json
 import logging
 import os.path
 import re
-import urllib
+import six.moves.urllib as urllib
 import swaggerpy
 
 from swaggerpy.http_client import SynchronousHttpClient
@@ -52,7 +52,8 @@ class Operation(object):
         :param kwargs: ARI operation arguments.
         :return: Implementation specific response or WebSocket connection
         """
-        log.info("%s?%r" % (self.json['nickname'], urllib.urlencode(kwargs)))
+        log.info("%s?%r" % (self.json['nickname'],
+                            urllib.parse.urlencode(kwargs)))
         method = self.json['httpMethod']
         uri = self.uri
         params = {}
@@ -68,7 +69,7 @@ class Operation(object):
             if value is not None:
                 if param['paramType'] == 'path':
                     uri = uri.replace('{%s}' % pname,
-                                      urllib.quote_plus(str(value)))
+                                      urllib.parse.quote_plus(str(value)))
                 elif param['paramType'] == 'query':
                     params[pname] = value
                 elif param['paramType'] == 'body':
