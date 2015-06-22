@@ -50,8 +50,7 @@ class ValidationProcessor(SwaggerProcessor):
 
     def process_api_declaration(self, resources, resource, context):
         required_fields = [
-            'swaggerVersion', 'basePath', 'resourcePath', 'apis',
-            'models'
+            'basePath', 'resourcePath', 'apis', 'models'
         ]
         validate_required_fields(resource, required_fields, context)
         # Check model name and id consistency
