@@ -57,7 +57,7 @@ class Operation(object):
         uri = self.uri
         params = {}
         data = None
-        headers = None
+        headers = {"Accept": "application/json"}
         for param in self.json.get('parameters', []):
             pname = param['name']
             value = kwargs.get(pname)
@@ -98,8 +98,7 @@ class Operation(object):
 
         if data:
             data = json.dumps(data)
-            headers = {'Content-type': 'application/json',
-                       'Accept': 'application/json'}
+            headers['Content-type'] = 'application/json'
 
         if self.json['is_websocket']:
             # Fix up http: URLs
