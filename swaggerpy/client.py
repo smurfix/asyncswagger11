@@ -73,11 +73,9 @@ class Operation(object):
                 elif param['paramType'] == 'query':
                     params[pname] = value
                 elif param['paramType'] == 'body':
-                    if isinstance(value, dict):
-                        if data:
-                            data.update(value)
-                        else:
-                            data = value
+                    if not data:
+                        data = {}
+                        data[pname] = value
                     else:
                         raise TypeError(
                             "Parameters of type 'body' require dict input")

@@ -172,6 +172,10 @@ class SynchronousHttpClient(HttpClient):
         :return: Requests response
         :rtype:  requests.Response
         """
+        if not headers:
+            headers = {}
+        if data:
+            headers['Content-type'] = 'application/json'
         req = requests.Request(
             method=method, url=url, params=params, data=data, headers=headers)
         self.apply_authentication(req)
