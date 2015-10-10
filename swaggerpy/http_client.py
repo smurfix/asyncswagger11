@@ -177,7 +177,7 @@ class SynchronousHttpClient(HttpClient):
         if data:
             headers['Content-type'] = 'application/json'
         req = requests.Request(
-            method=method, url=url, params=params, data=data, headers=headers)
+            method=method, url=url, params=params, headers=headers, data=data)
         self.apply_authentication(req)
         return self.session.send(self.session.prepare_request(req))
 

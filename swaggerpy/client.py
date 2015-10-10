@@ -67,6 +67,7 @@ class Operation(object):
                 value = ",".join(value)
 
             if value is not None:
+                print param
                 if param['paramType'] == 'path':
                     uri = uri.replace('{%s}' % pname,
                                       urllib.parse.quote_plus(str(value)))
@@ -75,10 +76,7 @@ class Operation(object):
                 elif param['paramType'] == 'body':
                     if not data:
                         data = {}
-                        data[pname] = value
-                    else:
-                        raise TypeError(
-                            "Parameters of type 'body' require dict input")
+                    data[pname] = value
                 else:
                     raise AssertionError(
                         "Unsupported paramType %s" %
@@ -108,7 +106,7 @@ class Operation(object):
             return self.http_client.ws_connect(uri, params=params)
         else:
             return self.http_client.request(
-                method, uri, params=params, data=data, headers=headers)
+                method, uri, params=params, headers=headers, data=data, headers=headers)
 
 
 class Resource(object):
