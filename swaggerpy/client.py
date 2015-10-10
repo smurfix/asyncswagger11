@@ -67,7 +67,6 @@ class Operation(object):
                 value = ",".join(value)
 
             if value is not None:
-                print param
                 if param['paramType'] == 'path':
                     uri = uri.replace('{%s}' % pname,
                                       urllib.parse.quote_plus(str(value)))
@@ -106,7 +105,7 @@ class Operation(object):
             return self.http_client.ws_connect(uri, params=params)
         else:
             return self.http_client.request(
-                method, uri, params=params, headers=headers, data=data, headers=headers)
+                method, uri, params=params, headers=headers, data=data)
 
 
 class Resource(object):
