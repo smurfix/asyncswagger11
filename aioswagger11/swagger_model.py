@@ -1,5 +1,7 @@
 #
 # Copyright (c) 2013, Digium, Inc.
+# Copyright (c) 2016, fokin.denis@gmail.com
+# Copyright (c) 2018, Matthias Urlichs
 #
 
 """Code for handling the base Swagger API model.
@@ -7,10 +9,9 @@
 
 import json
 import os
-import six
-import six.moves.urllib as urllib
+import urllib
 
-from aioswagger11.http_client import SynchronousHttpClient
+from aioswagger11.http_client import AsynchronousHttpClient
 from aioswagger11.processors import SwaggerProcessor, SwaggerError
 
 SWAGGER_VERSIONS = ["1.1"]
@@ -100,8 +101,7 @@ class ValidationProcessor(SwaggerProcessor):
         required_fields = ['type']
         validate_required_fields(prop, required_fields, context)
 
-
-def json_load_url(http_client, url):
+async def json_load_url(http_client, url):
     """Download and parse JSON from a URL.
 
     :param http_client: HTTP client interface.
@@ -112,22 +112,18 @@ def json_load_url(http_client, url):
     scheme = urllib.parse.urlparse(url).scheme
     if scheme == 'file':
         # requests can't handle file: URLs
-        fp = urllib.request.urlopen(url)
-        if six.PY3:
-            import codecs
-            reader = codecs.getreader(fp.info().get_content_charset('utf-8'))
-            fp = reader(fp)
+        fp = urllib.urlopen(url)
         try:
             return json.load(fp)
         finally:
             fp.close()
     else:
-        resp = http_client.request('GET', url)
-        resp.raise_for_status()
-        return resp.json()
+        resp = await http_client.request('GET', url)
+        text = await resp.text()
+        jsons = json.loads(text)
+        return jsons
 
-
-class Loader(object):
+class AsyncLoader(object):
     """Abstraction for loading Swagger API's.
 
     :param http_client: HTTP client interface.
@@ -144,7 +140,7 @@ class Loader(object):
         # noinspection PyTypeChecker
         self.processors = [ValidationProcessor()] + processors
 
-    def load_resource_listing(self, resources_url, base_url=None):
+    async def load_resource_listing(self, resources_url, base_url=None):
         """Load a resource listing, loading referenced API declarations.
 
         The following fields are added to the resource listing object model.
@@ -161,7 +157,7 @@ class Loader(object):
         """
 
         # Load the resource listing
-        resource_listing = json_load_url(self.http_client, resources_url)
+        resource_listing = await json_load_url(self.http_client, resources_url)
 
         # Some extra data only known about at load time
         resource_listing['url'] = resources_url
@@ -170,13 +166,13 @@ class Loader(object):
 
         # Load the API declarations
         for api in resource_listing.get('apis'):
-            self.load_api_declaration(base_url, api)
+            await self.load_api_declaration(base_url, api)
 
         # Now that the raw object model has been loaded, apply the processors
         self.process_resource_listing(resource_listing)
         return resource_listing
 
-    def load_api_declaration(self, base_url, api_dict):
+    async def load_api_declaration(self, base_url, api_dict):
         """Load an API declaration file.
 
         api_dict is modified with the results of the load:
@@ -188,7 +184,7 @@ class Loader(object):
         """
         path = api_dict.get('path').replace('{format}', 'json')
         api_dict['url'] = urllib.parse.urljoin(base_url + '/', path.strip('/'))
-        api_dict['api_declaration'] = json_load_url(
+        api_dict['api_declaration'] = await json_load_url(
             self.http_client, api_dict['url'])
 
     def process_resource_listing(self, resources):
@@ -216,7 +212,7 @@ def validate_required_fields(json, required_fields, context):
             "Missing fields: %s" % ', '.join(missing_fields), context)
 
 
-def load_file(resource_listing_file, http_client=None, processors=None):
+async def load_file(resource_listing_file, http_client=None, processors=None):
     """Loads a resource listing file, applying the given processors.
 
     :param http_client: HTTP client interface.
@@ -227,17 +223,17 @@ def load_file(resource_listing_file, http_client=None, processors=None):
     :raise: IOError: On error reading api-docs.
     """
     file_path = os.path.abspath(resource_listing_file)
-    url = urllib.parse.urljoin('file:', urllib.request.pathname2url(file_path))
+    url = urllib.parse.urljoin('file:', urllib.pathname2url(file_path))
     # When loading from files, everything is relative to the resource listing
     dir_path = os.path.dirname(file_path)
-    base_url = urllib.parse.urljoin('file:',
-                                    urllib.request.pathname2url(dir_path))
-    return load_url(url, http_client=http_client, processors=processors,
+    base_url = urllib.parse.urljoin('file:', urllib.pathname2url(dir_path))
+    resp = await load_url(url, http_client=http_client, processors=processors,
                     base_url=base_url)
+    return resp
 
 
-def load_url(resource_listing_url, http_client=None, processors=None,
-             base_url=None):
+async def load_url(resource_listing_url, http_client=None, processors=None,
+                 base_url=None):
     """Loads a resource listing, applying the given processors.
 
     :param resource_listing_url: URL for a resource listing.
@@ -251,11 +247,12 @@ def load_url(resource_listing_url, http_client=None, processors=None,
     :raise: IOError, URLError: On error reading api-docs.
     """
     if http_client is None:
-        http_client = SynchronousHttpClient()
+        http_client = AsynchronousHttpClient()
 
-    loader = Loader(http_client=http_client, processors=processors)
-    return loader.load_resource_listing(
+    loader = AsyncLoader(http_client=http_client, processors=processors)
+    resp = await loader.load_resource_listing(
         resource_listing_url, base_url=base_url)
+    return resp
 
 
 def load_json(resource_listing, http_client=None, processors=None):
@@ -268,8 +265,8 @@ def load_json(resource_listing, http_client=None, processors=None):
     :return: Processed resource listing.
     """
     if http_client is None:
-        http_client = SynchronousHttpClient()
+        http_client = AsynchronousHttpClient()
 
-    loader = Loader(http_client=http_client, processors=processors)
+    loader = AsyncLoader(http_client=http_client, processors=processors)
     loader.process_resource_listing(resource_listing)
     return resource_listing

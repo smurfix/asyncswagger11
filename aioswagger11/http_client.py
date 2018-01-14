@@ -2,16 +2,16 @@
 
 #
 # Copyright (c) 2013, Digium, Inc.
+# Copyright (c) 2016, fokin.denis@gmail.com
+# Copyright (c) 2018, Matthias Urlichs
 #
 
 """HTTP client abstractions.
 """
 
 import logging
-import requests
-import requests.auth
-import six.moves.urllib as urllib
-import websocket
+import urllib.parse
+import aiohttp
 
 log = logging.getLogger(__name__)
 
@@ -54,28 +54,6 @@ class HttpClient(object):
         raise NotImplementedError(
             "%s: Method not implemented", self.__class__.__name__)
 
-    def set_basic_auth(self, host, username, password):
-        """Configures client to use HTTP Basic authentication.
-
-        :param host: Hostname to limit authentication to.
-        :param username: Username
-        :param password: Password
-        """
-        raise NotImplementedError(
-            "%s: Method not implemented", self.__class__.__name__)
-
-    def set_api_key(self, host, api_key, param_name='api_key'):
-        """Configures client to use api_key authentication.
-
-        The api_key is added to every query parameter sent.
-
-        :param host: Hostname to limit authentication to.
-        :param api_key: Value for api_key.
-        :param param_name: Parameter name to use in query string.
-        """
-        raise NotImplementedError(
-            "%s: Method not implemented", self.__class__.__name__)
-
 
 class Authenticator(object):
     """Authenticates requests.
@@ -106,24 +84,6 @@ class Authenticator(object):
         raise NotImplementedError("%s: Method not implemented",
                                   self.__class__.__name__)
 
-
-# noinspection PyDocstring
-class BasicAuthenticator(Authenticator):
-    """HTTP Basic authenticator.
-
-    :param host: Host to authenticate for.
-    :param username: Username.
-    :param password: Password
-    """
-
-    def __init__(self, host, username, password):
-        super(BasicAuthenticator, self).__init__(host)
-        self.auth = requests.auth.HTTPBasicAuth(username, password)
-
-    def apply(self, request):
-        request.auth = self.auth
-
-
 # noinspection PyDocstring
 class ApiKeyAuthenticator(Authenticator):
     """?api_key authenticator.
@@ -145,68 +105,38 @@ class ApiKeyAuthenticator(Authenticator):
 
 
 # noinspection PyDocstring
-class SynchronousHttpClient(HttpClient):
-    """Synchronous HTTP client implementation.
+class AsynchronousHttpClient(HttpClient):
+    """Asynchronous HTTP client implementation.
     """
 
-    def __init__(self):
-        self.session = requests.Session()
-        self.authenticator = None
+    def __init__(self, username, password, loop):
+        self.authenticator = aiohttp.BasicAuth(username, password)
         self.websockets = set()
+        self.session = aiohttp.ClientSession(loop=loop, auth=self.authenticator)
 
-    def close(self):
-        self.session.close()
-        # There's no WebSocket factory to close; close connections individually
+    async def close(self):
+        for websocket in self.websockets:
+            await websocket.close()
+        await self.session.close()
 
-    def set_basic_auth(self, host, username, password):
-        self.authenticator = BasicAuthenticator(
-            host=host, username=username, password=password)
-
-    def set_api_key(self, host, api_key, param_name='api_key'):
-        self.authenticator = ApiKeyAuthenticator(
-            host=host, api_key=api_key, param_name=param_name)
-
-    def request(self, method, url, params=None, data=None, headers=None):
+    async def request(self, method, url, params=None, data=None, headers=None):
         """Requests based implementation.
-
-        :return: Requests response
-        :rtype:  requests.Response
+        :return: aiohttp response
+        :rtype:  aiohttp.ClientResponse
         """
-        if not headers:
-            headers = {}
-        if data:
-            headers['Content-type'] = 'application/json'
-        req = requests.Request(
-            method=method, url=url, params=params, headers=headers, data=data)
-        self.apply_authentication(req)
-        return self.session.send(self.session.prepare_request(req))
+        response = await self.session.request(
+            method=method, url=url, params=params, data=data, headers=headers)
+        return response
 
-    def ws_connect(self, url, params=None):
+    async def ws_connect(self, url, params=None):
         """Websocket-client based implementation.
-
-        :return: WebSocket connection
-        :rtype:  websocket.WebSocket
+        :return: aiohttp WebSocket response
+        :rtype:  aiohttp.ClientWebSocketResponse
         """
-        # Build a prototype request and apply authentication to it
-        proto_req = requests.Request('GET', url, params=params)
-        self.apply_authentication(proto_req)
-        # Prepare the request, so params will be put on the url,
-        # and authenticators can manipulate headers
-        preped_req = proto_req.prepare()
-        # Pull the Authorization header, if needed
-        header = ["%s: %s" % (k, v)
-                  for (k, v) in preped_req.headers.items()
-                  if k == 'Authorization']
-        # Pull the URL, which includes query params
-        url = preped_req.url
-        # Requests version 2.0.0 (at least) will no longer form a URL for us
-        # for ws scheme types, so we do it manually
         if params:
             joined_params = "&".join(["%s=%s" % (k, v)
                                      for (k, v) in params.items()])
             url += "?%s" % joined_params
-        return websocket.create_connection(url, header=header)
-
-    def apply_authentication(self, req):
-        if self.authenticator and self.authenticator.matches(req.url):
-            self.authenticator.apply(req)
+        ret = await self.session.ws_connect(url)
+        self.websockets.add(ret)
+        return ret

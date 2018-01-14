@@ -1,18 +1,22 @@
 #
 # Copyright (c) 2013, Digium, Inc.
+# Copyright (c) 2016, fokin.denis@gmail.com
+# Copyright (c) 2018, Matthias Urlichs
 #
 
-"""Swagger client library.
+"""Asynchronous Swagger client library.
+   rewritten with use of asyncio libs
 """
 
 import json
 import logging
 import os.path
 import re
-import six.moves.urllib as urllib
+import urllib
 import aioswagger11
+import asyncio
 
-from aioswagger11.http_client import SynchronousHttpClient
+from aioswagger11.http_client import AsynchronousHttpClient
 from aioswagger11.processors import WebsocketProcessor, SwaggerProcessor
 
 log = logging.getLogger(__name__)
@@ -33,9 +37,8 @@ class ClientProcessor(SwaggerProcessor):
         name, ext = os.path.splitext(os.path.basename(listing_api['path']))
         listing_api['name'] = name
 
-
-class Operation(object):
-    """Operation object.
+class AsyncOperation(object):
+    """AsyncOperation object.
     """
 
     def __init__(self, uri, operation, http_client):
@@ -46,14 +49,13 @@ class Operation(object):
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.json['nickname'])
 
-    def __call__(self, **kwargs):
+    async def __call__(self, **kwargs):
         """Invoke ARI operation.
 
         :param kwargs: ARI operation arguments.
         :return: Implementation specific response or WebSocket connection
         """
-        log.info("%s?%r" % (self.json['nickname'],
-                            urllib.parse.urlencode(kwargs)))
+        log.info("%s?%r" % (self.json['nickname'], urllib.parse.urlencode(kwargs)))
         method = self.json['httpMethod']
         uri = self.uri
         params = {}
@@ -102,10 +104,11 @@ class Operation(object):
             if data:
                 raise NotImplementedError(
                     "Sending body data with websockets not implmented")
-            return self.http_client.ws_connect(uri, params=params)
+            ret = await self.http_client.ws_connect(uri, params=params)
         else:
-            return self.http_client.request(
+            ret = await self.http_client.request(
                 method, uri, params=params, headers=headers, data=data)
+        return ret
 
 
 class Resource(object):
@@ -145,7 +148,7 @@ class Resource(object):
         """Gets the operation with the given nickname.
 
         :param name: Nickname of the operation.
-        :rtype:  Operation
+        :rtype:  AsyncOperation
         :return: Operation, or None if not found.
         """
         return self.operations.get(name)
@@ -160,19 +163,18 @@ class Resource(object):
         return self.json.get('name')
 
     def _build_operation(self, decl, api, operation):
-        """Build an operation object
+        """Build an asynchronous operation object
 
         :param decl: API declaration.
         :param api: API entry.
-        :param operation: Operation.
+        :param operation: AsyncOperation.
         """
         log.debug("Building operation %s.%s" % (
             self.get_name(), operation['nickname']))
         uri = decl['basePath'] + api['path']
-        return Operation(uri, operation, self.http_client)
+        return AsyncOperation(uri, operation, self.http_client)
 
-
-class SwaggerClient(object):
+class AsyncSwaggerClient(object):
     """Client object for accessing a Swagger-documented RESTful service.
 
     :param url_or_resource: Either the parsed resource listing+API decls, or
@@ -182,24 +184,29 @@ class SwaggerClient(object):
     :type  http_client: HttpClient
     """
 
-    def __init__(self, url_or_resource, http_client=None):
-        if not http_client:
-            http_client = SynchronousHttpClient()
-        self.http_client = http_client
-
-        loader = aioswagger11.Loader(
-            http_client, [WebsocketProcessor(), ClientProcessor()])
-
-        if isinstance(url_or_resource, str):
-            log.debug("Loading from %s" % url_or_resource)
-            self.api_docs = loader.load_resource_listing(url_or_resource)
+    def __init__(self, username=None, password=None, loop=None,
+                 http_client=None, url=None):
+        if not loop:
+            self.loop = asyncio.get_event_loop()
         else:
-            log.debug("Loading from %s" % url_or_resource.get('basePath'))
-            self.api_docs = url_or_resource
-            loader.process_resource_listing(self.api_docs)
+            self.loop = loop
+        if not http_client:
+            http_client = AsynchronousHttpClient(username, password, self.loop)
+        self.http_client = http_client
+        self.url = url
+        self.loader = aioswagger11.AsyncLoader(
+            self.http_client, [WebsocketProcessor(), ClientProcessor()])
 
+    async def init(self):
+        if isinstance(self.url, str):
+            log.debug("Loading from %s" % self.url)
+            self.api_docs = await self.loader.load_resource_listing(self.url)
+        else:
+            log.debug("Loading from %s" % self.url.get('basePath'))
+            self.api_docs = self.url
+            self.loader.process_resource_listing(self.api_docs)
         self.resources = {
-            resource['name']: Resource(resource, http_client)
+            resource['name']: Resource(resource, self.http_client)
             for resource in self.api_docs['apis']}
 
     def __repr__(self):
@@ -216,10 +223,10 @@ class SwaggerClient(object):
             raise AttributeError("API has no resource '%s'" % item)
         return resource
 
-    def close(self):
+    async def close(self):
         """Close the SwaggerClient, and underlying resources.
         """
-        self.http_client.close()
+        await self.http_client.close()
 
     def get_resource(self, name):
         """Gets a Swagger resource by name.

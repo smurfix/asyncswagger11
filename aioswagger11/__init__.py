@@ -1,8 +1,10 @@
 #
 # Copyright (c) 2013, Digium, Inc.
+# Copyright (c) 2016, fokin.denis@gmail.com
+# Copyright (c) 2018, Matthias Urlichs
 #
 
-"""Swagger processing libraries.
+"""Asynchronous Swagger processing libraries.
 
 More information on Swagger can be found `on the Swagger website
 <https://developers.helloreverb.com/swagger/>`

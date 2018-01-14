@@ -188,7 +188,7 @@ class SwaggerProcessor(object):
         :param resources: Resource listing object
         :param resource: resource object.
         :param api: API object
-        :param operation: Operation object.
+        :param operation: AsyncOperation object.
         :type context: ParsingContext
         :param context: Current context in the API.
         """
@@ -201,7 +201,7 @@ class SwaggerProcessor(object):
         :param resources: Resource listing object
         :param resource: resource object.
         :param api: API object
-        :param operation: Operation object.
+        :param operation: AsyncOperation object.
         :param parameter: Parameter object.
         :type context: ParsingContext
         :param context: Current context in the API.
@@ -215,7 +215,7 @@ class SwaggerProcessor(object):
         :param resources: Resource listing object
         :param resource: resource object.
         :param api: API object
-        :param operation: Operation object.
+        :param operation: AsyncOperation object.
         :param error_response: Response object.
         :type context: ParsingContext
         :param context: Current context in the API.
