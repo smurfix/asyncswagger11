@@ -1,10 +1,10 @@
 swaggerpy Package
 =================
 
-:mod:`swaggerpy` Package
+:mod:`aioswagger11` Package
 ------------------------
 
-.. automodule:: swaggerpy.__init__
+.. automodule:: aioswagger11.__init__
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ swaggerpy Package
 :mod:`codegen` Module
 ---------------------
 
-.. automodule:: swaggerpy.codegen
+.. automodule:: aioswagger11.codegen
     :members:
     :undoc-members:
     :show-inheritance:
@@ -20,7 +20,7 @@ swaggerpy Package
 :mod:`processors` Module
 ------------------------
 
-.. automodule:: swaggerpy.processors
+.. automodule:: aioswagger11.processors
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,7 +28,7 @@ swaggerpy Package
 :mod:`swagger_model` Module
 ---------------------------
 
-.. automodule:: swaggerpy.swagger_model
+.. automodule:: aioswagger11.swagger_model
     :members:
     :undoc-members:
     :show-inheritance:
@@ -38,5 +38,5 @@ Subpackages
 
 .. toctree::
 
-    swaggerpy.client
+    aioswagger11.client
 

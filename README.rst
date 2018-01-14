@@ -24,7 +24,7 @@ Install the latest release from PyPI.
 
 ::
 
-    $ sudo pip install swaggerpy
+    $ sudo pip install aioswagger11
 
 Or install from source using the ``setup.py`` script.
 
@@ -47,8 +47,8 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
 
     import json
 
-    from swaggerpy.client import SwaggerClient
-    from swaggerpy.http_client import SynchronousHttpClient
+    from aioswagger11.client import SwaggerClient
+    from aioswagger11.http_client import SynchronousHttpClient
 
     http_client = SynchronousHttpClient()
     http_client.set_basic_auth('localhost', 'hey', 'peekaboo')

@@ -11,7 +11,7 @@ import httpretty
 import requests
 import unittest
 
-from swaggerpy.client import SwaggerClient
+from aioswagger11.client import SwaggerClient
 
 
 # noinspection PyDocstring

@@ -12,28 +12,28 @@ import os
 from setuptools import setup
 
 setup(
-    name="swaggerpy",
+    name="aioswagger11",
     version="0.2.2",
     license="BSD 3-Clause License",
-    description="Library for accessing Swagger-enabled API's",
+    description="Library for accessing Swagger-1.1-enabled APIs",
     long_description=open(os.path.join(os.path.dirname(__file__),
                                        "README.rst")).read(),
     author="Digium, Inc.",
     author_email="dlee@digium.com",
-    url="https://github.com/digium/swagger-py",
-    packages=["swaggerpy"],
+    url="https://github.com/smurfix/aioswagger11",
+    packages=["aioswagger11"],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python",
+        "Programming Language :: Python3",
     ],
     tests_require=["nose", "tissue", "coverage", "httpretty"],
-    install_requires=["requests", "websocket-client", "six"],
+    install_requires=[],
     entry_points="""
     [console_scripts]
-    swagger-codegen = swaggerpy.codegen:main
+    swagger11-codegen = aioswagger11.codegen:main
     """
 )

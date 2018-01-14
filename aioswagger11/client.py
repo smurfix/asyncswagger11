@@ -10,10 +10,10 @@ import logging
 import os.path
 import re
 import six.moves.urllib as urllib
-import swaggerpy
+import aioswagger11
 
-from swaggerpy.http_client import SynchronousHttpClient
-from swaggerpy.processors import WebsocketProcessor, SwaggerProcessor
+from aioswagger11.http_client import SynchronousHttpClient
+from aioswagger11.processors import WebsocketProcessor, SwaggerProcessor
 
 log = logging.getLogger(__name__)
 
@@ -187,7 +187,7 @@ class SwaggerClient(object):
             http_client = SynchronousHttpClient()
         self.http_client = http_client
 
-        loader = swaggerpy.Loader(
+        loader = aioswagger11.Loader(
             http_client, [WebsocketProcessor(), ClientProcessor()])
 
         if isinstance(url_or_resource, str):

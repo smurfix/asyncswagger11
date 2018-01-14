@@ -10,8 +10,8 @@ import os
 import six
 import six.moves.urllib as urllib
 
-from swaggerpy.http_client import SynchronousHttpClient
-from swaggerpy.processors import SwaggerProcessor, SwaggerError
+from aioswagger11.http_client import SynchronousHttpClient
+from aioswagger11.processors import SwaggerProcessor, SwaggerError
 
 SWAGGER_VERSIONS = ["1.1", "1.2"]
 
