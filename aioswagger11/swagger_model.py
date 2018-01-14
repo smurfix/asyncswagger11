@@ -13,7 +13,7 @@ import six.moves.urllib as urllib
 from aioswagger11.http_client import SynchronousHttpClient
 from aioswagger11.processors import SwaggerProcessor, SwaggerError
 
-SWAGGER_VERSIONS = ["1.1", "1.2"]
+SWAGGER_VERSIONS = ["1.1"]
 
 SWAGGER_PRIMITIVES = [
     'void',
