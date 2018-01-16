@@ -12,9 +12,15 @@
 import logging
 import urllib.parse
 import aiohttp
+from aiohttp import web_exceptions
 
 log = logging.getLogger(__name__)
 
+error_map = {}
+for k in web_exceptions.__all__:
+    v = getattr(web_exceptions,k)
+    if isinstance(getattr(v,'status_code',None), int):
+        error_map[v.status_code] = v
 
 class HttpClient(object):
     """Interface for a minimal HTTP client.
@@ -117,7 +123,7 @@ class AsynchronousHttpClient(HttpClient):
     async def close(self):
         for websocket in self.websockets:
             await websocket.close()
-        await self.session.close()
+        self.session.close()
 
     async def request(self, method, url, params=None, data=None, headers=None):
         """Requests based implementation.
@@ -126,6 +132,17 @@ class AsynchronousHttpClient(HttpClient):
         """
         response = await self.session.request(
             method=method, url=url, params=params, data=data, headers=headers)
+        if response.status >= 400:
+            err = error_map.get(response.status,web_exceptions.HTTPError)(
+                    headers=response.headers,
+                    reason=response.reason,
+                    body=None,
+                    text="".join(response.text()),
+                    content_type=None, # response.content_type,
+                    )
+            response.status_code = response.status
+            err.response = response
+            raise err
         return response
 
     async def ws_connect(self, url, params=None):
