@@ -37,8 +37,8 @@ class ClientProcessor(SwaggerProcessor):
         name, ext = os.path.splitext(os.path.basename(listing_api['path']))
         listing_api['name'] = name
 
-class AsyncOperation(object):
-    """AsyncOperation object.
+class Operation(object):
+    """async Operation object.
     """
 
     def __init__(self, uri, operation, http_client):
@@ -148,7 +148,7 @@ class Resource(object):
         """Gets the operation with the given nickname.
 
         :param name: Nickname of the operation.
-        :rtype:  AsyncOperation
+        :rtype:  Operation
         :return: Operation, or None if not found.
         """
         return self.operations.get(name)
@@ -167,14 +167,14 @@ class Resource(object):
 
         :param decl: API declaration.
         :param api: API entry.
-        :param operation: AsyncOperation.
+        :param operation: Operation.
         """
         log.debug("Building operation %s.%s" % (
             self.get_name(), operation['nickname']))
         uri = decl['basePath'] + api['path']
-        return AsyncOperation(uri, operation, self.http_client)
+        return Operation(uri, operation, self.http_client)
 
-class AsyncSwaggerClient(object):
+class SwaggerClient(object):
     """Client object for accessing a Swagger-documented RESTful service.
 
     :param url_or_resource: Either the parsed resource listing+API decls, or
@@ -194,7 +194,7 @@ class AsyncSwaggerClient(object):
             http_client = AsynchronousHttpClient(username, password, self.loop)
         self.http_client = http_client
         self.url = url
-        self.loader = aioswagger11.AsyncLoader(
+        self.loader = aioswagger11.Loader(
             self.http_client, [WebsocketProcessor(), ClientProcessor()])
 
     async def init(self):

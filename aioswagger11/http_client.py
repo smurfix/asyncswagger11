@@ -109,7 +109,7 @@ class AsynchronousHttpClient(HttpClient):
     """Asynchronous HTTP client implementation.
     """
 
-    def __init__(self, username, password, loop):
+    def __init__(self, username, password, loop=None):
         self.authenticator = aiohttp.BasicAuth(username, password)
         self.websockets = set()
         self.session = aiohttp.ClientSession(loop=loop, auth=self.authenticator)

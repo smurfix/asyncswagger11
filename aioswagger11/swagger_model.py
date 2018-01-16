@@ -123,7 +123,7 @@ async def json_load_url(http_client, url):
         jsons = json.loads(text)
         return jsons
 
-class AsyncLoader(object):
+class Loader(object):
     """Abstraction for loading Swagger API's.
 
     :param http_client: HTTP client interface.
@@ -249,7 +249,7 @@ async def load_url(resource_listing_url, http_client=None, processors=None,
     if http_client is None:
         http_client = AsynchronousHttpClient()
 
-    loader = AsyncLoader(http_client=http_client, processors=processors)
+    loader = Loader(http_client=http_client, processors=processors)
     resp = await loader.load_resource_listing(
         resource_listing_url, base_url=base_url)
     return resp
@@ -267,6 +267,6 @@ def load_json(resource_listing, http_client=None, processors=None):
     if http_client is None:
         http_client = AsynchronousHttpClient()
 
-    loader = AsyncLoader(http_client=http_client, processors=processors)
+    loader = Loader(http_client=http_client, processors=processors)
     loader.process_resource_listing(resource_listing)
     return resource_listing
