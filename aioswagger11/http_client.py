@@ -187,6 +187,8 @@ class AsynchronousHttpClient(HttpClient):
         """
         if self.authenticator is not None and \
             self.authenticator.matches(url):
+            if params is None:
+                params = {}
             if headers is None:
                 headers = {}
             self.authenticator.apply(headers, params)
@@ -211,6 +213,12 @@ class AsynchronousHttpClient(HttpClient):
         :return: aiohttp WebSocket response
         :rtype:  aiohttp.ClientWebSocketResponse
         """
+        if self.authenticator is not None and \
+            self.authenticator.matches(url):
+            if params is None:
+                params = {}
+            self.authenticator.apply(params, params)
+
         if params:
             joined_params = "&".join(["%s=%s" % (k, v)
                                      for (k, v) in params.items()])
@@ -218,3 +226,4 @@ class AsynchronousHttpClient(HttpClient):
         ret = await self.session.ws_connect(url)
         self.websockets.add(ret)
         return ret
+
