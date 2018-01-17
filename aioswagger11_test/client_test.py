@@ -2,165 +2,79 @@
 
 #
 # Copyright (c) 2013, Digium, Inc.
+# Copyright (c) 2018, Matthias Urlichs
 #
 
 """Swagger client tests.
 """
 
 import httpretty
-import requests
-import unittest
+import pytest
 
 from aioswagger11.client import SwaggerClient
 
+from aiohttp.web_exceptions import HTTPNoContent, HTTPCreated
 
 # noinspection PyDocstring
-class ClientTest(unittest.TestCase):
+class TestClient:
 
-    @httpretty.activate
-    def test_bad_operation(self):
-        try:
-            self.uut.pet.doesNotExist()
-            self.fail("Expected attribute error")
-        except AttributeError:
-            pass
+    def test_bad_operation(self, uut):
+        with pytest.raises(AttributeError):
+            uut.pet.doesNotExist()
 
-    @httpretty.activate
-    def test_bad_param(self):
-        try:
-            self.uut.pet.listPets(doesNotExist='asdf')
-            self.fail("Expected type error")
-        except TypeError:
-            pass
+    @pytest.mark.asyncio
+    async def test_bad_param(self, uut):
+        with pytest.raises(TypeError):
+            await uut.pet.listPets(doesNotExist='asdf')
 
-    @httpretty.activate
-    def test_missing_required(self):
-        try:
-            self.uut.pet.createPet()
-            self.fail("Expected type error")
-        except TypeError:
-            pass
+    @pytest.mark.asyncio
+    async def test_missing_required(self, uut):
+        with pytest.raises(TypeError):
+            await uut.pet.createPet()
 
-    @httpretty.activate
-    def test_get(self):
+    @pytest.mark.asyncio
+    async def test_get(self, uut):
         httpretty.register_uri(
             httpretty.GET, "http://swagger.py/swagger-test/pet",
+            content_type="application/json",
             body='[]')
 
-        resp = self.uut.pet.listPets()
-        self.assertEqual(200, resp.status_code)
-        self.assertEqual([], resp.json())
+        resp = await uut.pet.listPets()
+        assert resp.status == 200
+        assert (await resp.json()) == []
 
-    @httpretty.activate
-    def test_multiple(self):
+    @pytest.mark.asyncio
+    async def test_multiple(self, uut):
         httpretty.register_uri(
             httpretty.GET, "http://swagger.py/swagger-test/pet/find",
+            content_type="application/json",
             body='[]')
 
-        resp = self.uut.pet.findPets(species=['cat', 'dog'])
-        self.assertEqual(200, resp.status_code)
-        self.assertEqual([], resp.json())
-        self.assertEqual({'species': ['cat,dog']},
-                         httpretty.last_request().querystring)
+        resp = await uut.pet.findPets(species=['cat', 'dog'])
+        assert resp.status == 200
+        assert (await resp.json()) == []
+        assert httpretty.last_request().querystring == {'species': ['cat,dog']}
 
-    @httpretty.activate
-    def test_post(self):
+    @pytest.mark.asyncio
+    async def test_post(self, uut):
         httpretty.register_uri(
             httpretty.POST, "http://swagger.py/swagger-test/pet",
-            status=requests.codes.created,
+            status=HTTPCreated.status_code,
+            content_type="application/json",
             body='{"id": 1234, "name": "Sparky"}')
 
-        resp = self.uut.pet.createPet(name='Sparky')
-        self.assertEqual(requests.codes.created, resp.status_code)
-        self.assertEqual({"id": 1234, "name": "Sparky"}, resp.json())
-        self.assertEqual({'name': ['Sparky']},
-                         httpretty.last_request().querystring)
+        resp = await uut.pet.createPet(name='Sparky')
+        assert resp.status == HTTPCreated.status_code
+        assert (await resp.json()) == {"id": 1234, "name": "Sparky"}
+        assert httpretty.last_request().querystring == {'name': ['Sparky']}
 
-    @httpretty.activate
-    def test_delete(self):
+    @pytest.mark.asyncio
+    async def test_delete(self, uut):
         httpretty.register_uri(
             httpretty.DELETE, "http://swagger.py/swagger-test/pet/1234",
-            status=requests.codes.no_content)
+            status=HTTPNoContent.status_code)
 
-        resp = self.uut.pet.deletePet(petId=1234)
-        self.assertEqual(requests.codes.no_content, resp.status_code)
-        self.assertEqual(b'', resp.content)
+        resp = await uut.pet.deletePet(petId=1234)
+        assert resp.status == HTTPNoContent.status_code
+        assert (await resp.read()) == b''
 
-    def setUp(self):
-        # Default handlers for all swagger.py access
-        self.resource_listing = {
-            "swaggerVersion": "1.1",
-            "basePath": "http://swagger.py/swagger-test",
-            "apis": [
-                {
-                    "path": "/api-docs/pet.json",
-                    "description": "Test loader when missing a file",
-                    "api_declaration": {
-                        "swaggerVersion": "1.1",
-                        "basePath": "http://swagger.py/swagger-test",
-                        "resourcePath": "/pet.json",
-                        "apis": [
-                            {
-                                "path": "/pet",
-                                "operations": [
-                                    {
-                                        "httpMethod": "GET",
-                                        "nickname": "listPets"
-                                    },
-                                    {
-                                        "httpMethod": "POST",
-                                        "nickname": "createPet",
-                                        "parameters": [
-                                            {
-                                                "name": "name",
-                                                "paramType": "query",
-                                                "dataType": "string",
-                                                "required": True
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "path": "/pet/find",
-                                "operations": [
-                                    {
-                                        "httpMethod": "GET",
-                                        "nickname": "findPets",
-                                        "parameters": [
-                                            {
-                                                "name": "species",
-                                                "paramType": "query",
-                                                "dataType": "string",
-                                                "allowMultiple": True
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            {
-                                "path": "/pet/{petId}",
-                                "operations": [
-                                    {
-                                        "httpMethod": "DELETE",
-                                        "nickname": "deletePet",
-                                        "parameters": [
-                                            {
-                                                "name": "petId",
-                                                "paramType": "path"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ],
-                        "models": {}
-                    }
-                }
-            ]
-        }
-        self.uut = SwaggerClient(self.resource_listing)
-
-
-if __name__ == '__main__':
-    unittest.main()

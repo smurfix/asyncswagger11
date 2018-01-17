@@ -2,38 +2,42 @@
 
 #
 # Copyright (c) 2013, Digium, Inc.
+# Copyright (c) 2018, Matthias Urlichs
 #
 
-import unittest
+import pytest
 import aioswagger11
 
 from aioswagger11 import swagger_model
 
 
-class TestProcessor(swagger_model.SwaggerProcessor):
+class FakeProcessor(swagger_model.SwaggerProcessor):
     def process_resource_listing(self, resources, context):
         resources['processed'] = True
 
 
-class LoaderTest(unittest.TestCase):
-    def test_simple(self):
-        uut = aioswagger11.load_file('test-data/1.1/simple/resources.json')
-        self.assertEqual('1.1', uut['swaggerVersion'])
+class TestLoader:
+    @pytest.mark.asyncio
+    async def test_simple(self):
+        uut = await aioswagger11.load_file('test-data/1.1/simple/resources.json')
+        assert uut['swaggerVersion'] == '1.1'
         decl = uut['apis'][0]['api_declaration']
-        self.assertEqual(1, len(decl['models']))
-        self.assertEqual(1, len(decl['models']['Simple']['properties']))
+        assert len(decl['models']) == 1
+        assert len(decl['models']['Simple']['properties']) == 1
 
-    def test_processor(self):
-        uut = aioswagger11.load_file('test-data/1.1/simple/resources.json',
-                                  processors=[TestProcessor()])
-        self.assertEqual('1.1', uut['swaggerVersion'])
-        self.assertTrue(uut['processed'])
+    @pytest.mark.asyncio
+    async def test_processor(self):
+        uut = await aioswagger11.load_file('test-data/1.1/simple/resources.json',
+                                  processors=[FakeProcessor()])
+        assert uut['swaggerVersion'] == '1.1'
+        assert uut['processed'] is True
 
-    def test_missing(self):
+    @pytest.mark.asyncio
+    async def test_missing(self):
         try:
-            aioswagger11.load_file(
+            await aioswagger11.load_file(
                 'test-data/1.1/missing_resource/resources.json')
-            self.fail("Expected load failure b/c of missing file")
+            pytest.fail("Expected load failure b/c of missing file")
         except IOError:
             pass
 

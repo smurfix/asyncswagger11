@@ -4,11 +4,10 @@
 # Copyright (c) 2013, Digium, Inc.
 #
 
-import unittest
+# no tests yet. Duh.
+import pytest
 
 
-class UtilTest(unittest.TestCase):
+class TestUtil:
     pass
 
-if __name__ == '__main__':
-    unittest.main()
