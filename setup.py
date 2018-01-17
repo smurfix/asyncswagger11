@@ -20,7 +20,7 @@ setup(
     long_description=open(os.path.join(os.path.dirname(__file__),
                                        "README.rst")).read(),
     author="Matthias Urlichs",
-    author_email="<matthias@urlichs.de>",
+    author_email="matthias@urlichs.de",
     url="https://github.com/smurfix/aioswagger11",
     packages=["aioswagger11"],
     classifiers=[
