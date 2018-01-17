@@ -112,7 +112,7 @@ async def json_load_url(http_client, url):
     scheme = urllib.parse.urlparse(url).scheme
     if scheme == 'file':
         # requests can't handle file: URLs
-        fp = urllib.urlopen(url)
+        fp = urllib.request.urlopen(url)
         try:
             return json.load(fp)
         finally:
@@ -223,10 +223,10 @@ async def load_file(resource_listing_file, http_client=None, processors=None):
     :raise: IOError: On error reading api-docs.
     """
     file_path = os.path.abspath(resource_listing_file)
-    url = urllib.parse.urljoin('file:', urllib.pathname2url(file_path))
+    url = urllib.parse.urljoin('file:', urllib.request.pathname2url(file_path))
     # When loading from files, everything is relative to the resource listing
     dir_path = os.path.dirname(file_path)
-    base_url = urllib.parse.urljoin('file:', urllib.pathname2url(dir_path))
+    base_url = urllib.parse.urljoin('file:', urllib.request.pathname2url(dir_path))
     resp = await load_url(url, http_client=http_client, processors=processors,
                     base_url=base_url)
     return resp
