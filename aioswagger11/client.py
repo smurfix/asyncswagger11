@@ -190,12 +190,9 @@ class SwaggerClient(object):
     :type  http_client: HttpClient
     """
 
-    def __init__(self, username='', password='', loop=None,
-                 http_client=None, url=None):
-        if not loop:
-            self.loop = asyncio.get_event_loop()
-        else:
-            self.loop = loop
+    def __init__(self, url=None, username='', password='', loop=None,
+                 http_client=None):
+        self.loop = loop or asyncio.get_event_loop()
         if not http_client:
             http_client = AsynchronousHttpClient(username, password, self.loop)
         self.http_client = http_client
