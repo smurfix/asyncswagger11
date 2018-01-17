@@ -246,12 +246,16 @@ async def load_url(resource_listing_url, http_client=None, processors=None,
     :return: Processed object model from
     :raise: IOError, URLError: On error reading api-docs.
     """
-    if http_client is None:
-        http_client = AsynchronousHttpClient()
+    client = http_client or AsynchronousHttpClient()
 
-    loader = Loader(http_client=http_client, processors=processors)
-    resp = await loader.load_resource_listing(
-        resource_listing_url, base_url=base_url)
+    try:
+        loader = Loader(http_client=http_client, processors=processors)
+        resp = await loader.load_resource_listing(
+            resource_listing_url, base_url=base_url)
+
+    finally:
+        if http_client is None:
+            await client.close()
     return resp
 
 
