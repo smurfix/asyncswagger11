@@ -31,7 +31,7 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.5",
     ],
-    tests_require=["nose", "tissue", "coverage", "httpretty"],
+    tests_require=["pytest", "coverage", "httpretty"],
     install_requires=["aiohttp"],
     entry_points="""
     [console_scripts]
