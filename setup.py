@@ -14,7 +14,7 @@ from setuptools import setup
 
 setup(
     name="aioswagger11",
-    version="0.1.0",
+    version="0.9.0",
     license="BSD 3-Clause License",
     description="Asynchronous library for accessing Swagger-1.1-enabled APIs",
     long_description=open(os.path.join(os.path.dirname(__file__),
@@ -24,12 +24,13 @@ setup(
     url="https://github.com/smurfix/aioswagger11",
     packages=["aioswagger11"],
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
     ],
     tests_require=["pytest", "coverage", "httpretty"],
     install_requires=["aiohttp"],
