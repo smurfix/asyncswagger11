@@ -12,6 +12,7 @@
 import logging
 import urllib.parse
 import aiohttp
+import base64
 from aiohttp import web_exceptions
 
 log = logging.getLogger(__name__)
@@ -31,6 +32,29 @@ class HttpClient(object):
         """
         raise NotImplementedError(
             "%s: Method not implemented", self.__class__.__name__)
+
+    def set_basic_auth(self, host, username, password):
+        """Configures client to use HTTP Basic authentication.
+
+        :param host: Hostname to limit authentication to.
+        :param username: Username
+        :param password: Password
+        """
+        raise NotImplementedError(
+            "%s: Method not implemented", self.__class__.__name__)
+
+    def set_api_key(self, host, api_key, param_name='api_key'):
+        """Configures client to use api_key authentication.
+
+        The api_key is added to every query parameter sent.
+
+        :param host: Hostname to limit authentication to.
+        :param api_key: Value for api_key.
+        :param param_name: Parameter name to use in query string.
+        """
+        raise NotImplementedError(
+            "%s: Method not implemented", self.__class__.__name__)
+
 
     def request(self, method, url, params=None, data=None):
         """Issue an HTTP request.
@@ -82,13 +106,30 @@ class Authenticator(object):
         split = urllib.parse.urlsplit(url)
         return self.host == split.hostname
 
-    def apply(self, request):
+    def apply(self, headers, params):
         """Apply authentication to a request.
 
-        :param request: Request to add authentication information to.
+        :param headers: Headers to add authentication information to.
         """
         raise NotImplementedError("%s: Method not implemented",
                                   self.__class__.__name__)
+
+class BasicAuthenticator(Authenticator):
+    """HTTP Basic authenticator.
+
+    :param host: Host to authenticate for.
+    :param username: Username.
+    :param password: Password
+    """
+
+    def __init__(self, host, username, password):
+        super(BasicAuthenticator, self).__init__(host)
+        self.username = username
+        self.password = password
+
+    def apply(self, headers, params):
+        headers['Authorization'] = "Basic " + \
+            base64.b64encode((self.username+':'+self.password).encode("utf-8")).decode("ascii")
 
 # noinspection PyDocstring
 class ApiKeyAuthenticator(Authenticator):
@@ -106,8 +147,8 @@ class ApiKeyAuthenticator(Authenticator):
         self.param_name = param_name
         self.api_key = api_key
 
-    def apply(self, request):
-        request.params[self.param_name] = self.api_key
+    def apply(self, headers, params):
+        params[self.param_name] = self.api_key
 
 
 # noinspection PyDocstring
@@ -115,10 +156,24 @@ class AsynchronousHttpClient(HttpClient):
     """Asynchronous HTTP client implementation.
     """
 
-    def __init__(self, username, password, loop=None):
-        self.authenticator = aiohttp.BasicAuth(username, password)
+    def __init__(self, username='', password='', loop=None, auth=None):
+        if auth is None:
+            if username or password:
+                auth = BasicAuthenticator(None, username, password)
+        elif username or password:
+            raise RuntimeError("Conflicting authentication:"
+                " use user+pass or auth, not both")
+        self.authenticator = auth
         self.websockets = set()
-        self.session = aiohttp.ClientSession(loop=loop, auth=self.authenticator)
+        self.session = aiohttp.ClientSession(loop=loop)
+
+    def set_basic_auth(self, host, username, password):
+        self.authenticator = BasicAuthenticator(
+            host=host, username=username, password=password)
+
+    def set_api_key(self, host, api_key, param_name='api_key'):
+        self.authenticator = ApiKeyAuthenticator(
+            host=host, api_key=api_key, param_name=param_name)
 
     async def close(self):
         for websocket in self.websockets:
@@ -130,6 +185,12 @@ class AsynchronousHttpClient(HttpClient):
         :return: aiohttp response
         :rtype:  aiohttp.ClientResponse
         """
+        if self.authenticator is not None and \
+            self.authenticator.matches(url):
+            if headers is None:
+                headers = {}
+            self.authenticator.apply(headers, params)
+
         response = await self.session.request(
             method=method, url=url, params=params, data=data, headers=headers)
         if response.status >= 400:
