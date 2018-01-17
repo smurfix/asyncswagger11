@@ -259,18 +259,15 @@ async def load_url(resource_listing_url, http_client=None, processors=None,
     return resp
 
 
-def load_json(resource_listing, http_client=None, processors=None):
+def load_json(resource_listing, processors=None):
     """Process a resource listing that has already been parsed.
 
     :param resource_listing: Parsed resource listing.
     :type  resource_listing: dict
-    :param http_client:
     :param processors:
     :return: Processed resource listing.
     """
-    if http_client is None:
-        http_client = AsynchronousHttpClient()
-
-    loader = Loader(http_client=http_client, processors=processors)
+    # This does not actually require a client
+    loader = Loader(http_client=None, processors=processors)
     loader.process_resource_listing(resource_listing)
     return resource_listing
