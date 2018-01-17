@@ -72,7 +72,7 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
         ws = ari.events.eventWebsocket(app='hello')
 
         async for msg_str in ws:
-            if msg.type == aiohttp.WSMsgType.CLOSED:
+            if msg.type in {aiohttp.WSMsgType.CLOSED, aiohttp.WSMsgType.CLOSING}:
                 break
             elif msg.type != aiohttp.WSMsgType.TEXT:
                 continue # ignore
