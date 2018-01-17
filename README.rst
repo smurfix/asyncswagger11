@@ -43,30 +43,47 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
 
 .. code:: Python
 
-    #!/usr/bin/env python
+    #!/usr/bin/env python3
 
     import json
+    import asyncio
+    import aiohttp
 
     from aioswagger11.client import SwaggerClient
-    from aioswagger11.http_client import SynchronousHttpClient
+    from aioswagger11.http_client import AsynchronousHttpClient
 
-    http_client = SynchronousHttpClient()
-    http_client.set_basic_auth('localhost', 'hey', 'peekaboo')
+    http_client = AsynchronousHttpClient()
+    http_client.set_api_key('localhost', 'hey:peekaboo')
 
-    ari = SwaggerClient(
-        "http://localhost:8088/ari/api-docs/resources.json",
-        http_client=http_client)
+    async def run(ari,msg_json):
+        channelId = msg_json['channel']['id']
+        await ari.channels.answer(channelId=channelId)
+        await ari.channels.play(channelId=channelId,
+                        media='sound:hello-world')
+        # In a real program you should wait for the PlaybackFinished event instead
+        await asyncio.sleep(3)
+        await ari.channels.continueInDialplan(channelId=channelId)
 
-    ws = ari.events.eventWebsocket(app='hello')
+    async def main():
+        ari = SwaggerClient(
+            "http://localhost:8088/ari/api-docs/resources.json",
+            http_client=http_client)
 
-    for msg_str in iter(lambda: ws.recv(), None):
-        msg_json = json.loads(msg_str)
-        if msg_json['type'] == 'StasisStart':
-            channelId = msg_json['channel']['id']
-            ari.channels.answer(channelId=channelId)
-            ari.channels.play(channelId=channelId,
-                              media='sound:hello-world')
-            ari.channels.continueInDialplan(channelId=channelId)
+        ws = ari.events.eventWebsocket(app='hello')
+
+        async for msg_str in ws:
+            if msg.type == aiohttp.WSMsgType.CLOSED:
+                break
+            elif msg.type != aiohttp.WSMsgType.TEXT:
+                continue # ignore
+
+            msg_json = json.loads(msg_str)
+            if msg_json['type'] == 'StasisStart':
+                asyncio.ensure_future(run(ari,msg_json))
+
+    if __name__ == "__main__":
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(main())
 
 swagger-codegen
 ===============
@@ -125,7 +142,7 @@ To keep things isolated, I also recommend installing (and using)
     $ . ~/virtualenv/swagger/bin/activate
 
 `Setuptools <http://pypi.python.org/pypi/setuptools>`__ is used for
-building. `Nose <http://nose.readthedocs.org/en/latest/>`__ is used
+building. `Pytest <http://pytest.readthedocs.org/en/latest/>`__ is used
 for unit testing, with the `coverage
 <http://nedbatchelder.com/code/coverage/>`__ plugin installed to
 generated code coverage reports. Pass ``--with-coverage`` to generate
@@ -143,7 +160,9 @@ the code coverage report. HTML versions of the reports are put in
 License
 -------
 
-Copyright (c) 2013, Digium, Inc. All rights reserved.
+Copyright (c) 2013, Digium, Inc.
+Copyright (c) 2018, Matthias Urlichs
 
 Swagger.py is licensed with a `BSD 3-Clause
 License <http://opensource.org/licenses/BSD-3-Clause>`__.
+
