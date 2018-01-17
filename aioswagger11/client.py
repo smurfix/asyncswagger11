@@ -184,7 +184,7 @@ class SwaggerClient(object):
     :type  http_client: HttpClient
     """
 
-    def __init__(self, username=None, password=None, loop=None,
+    def __init__(self, username='', password='', loop=None,
                  http_client=None, url=None):
         if not loop:
             self.loop = asyncio.get_event_loop()
