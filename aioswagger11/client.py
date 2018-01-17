@@ -47,7 +47,10 @@ class Operation(object):
         self.http_client = http_client
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.json['nickname'])
+        try:
+            return "%s(%s)" % (self.__class__.__name__, self.json['nickname'])
+        except Exception:
+            return "%s(?)" % (self.__class__.__name__,)
 
     async def __call__(self, **kwargs):
         """Invoke ARI operation.
@@ -129,7 +132,10 @@ class Resource(object):
             for oper in api['operations']}
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.json['name'])
+        try:
+            return "%s(%s)" % (self.__class__.__name__, self.json['name'])
+        except Exception:
+            return "%s(?)" % (self.__class__.__name__,)
 
     def __getattr__(self, item):
         """Promote operations to be object fields.
@@ -210,7 +216,10 @@ class SwaggerClient(object):
             for resource in self.api_docs['apis']}
 
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.api_docs['basePath'])
+        try:
+            return "%s(%s)" % (self.__class__.__name__, self.api_docs['basePath'])
+        except Exception:
+            return "%s(?)" % (self.__class__.__name__,)
 
     def __getattr__(self, item):
         """Promote resource objects to be client fields.
