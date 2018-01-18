@@ -14,14 +14,14 @@ from setuptools import setup
 
 setup(
     name="aioswagger11",
-    version="0.9.0",
+    version="0.9.0.1",
     license="BSD 3-Clause License",
     description="Asynchronous library for accessing Swagger-1.1-enabled APIs",
     long_description=open(os.path.join(os.path.dirname(__file__),
                                        "README.rst")).read(),
     author="Matthias Urlichs",
     author_email="matthias@urlichs.de",
-    url="https://github.com/smurfix/aioswagger11",
+    url="https://github.com/M-o-a-T/aioswagger11",
     packages=["aioswagger11"],
     classifiers=[
         "Development Status :: 4 - Beta",
