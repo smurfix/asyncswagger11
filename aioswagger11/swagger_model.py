@@ -124,7 +124,7 @@ async def json_load_url(http_client, url):
         return jsons
 
 class Loader(object):
-    """Abstraction for loading Swagger API's.
+    """Abstraction for loading Swagger APIs.
 
     :param http_client: HTTP client interface.
     :type  http_client: http_client.HttpClient

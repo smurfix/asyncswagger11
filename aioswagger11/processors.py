@@ -85,7 +85,7 @@ class SwaggerError(Exception):
 
 
 class SwaggerProcessor(object):
-    """Post processing interface for Swagger API's.
+    """Post processing interface for Swagger APIs.
 
     This processor can add fields to model objects for additional
     information to use in the templates.

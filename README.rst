@@ -1,8 +1,22 @@
 About
 -----
 
+aioswagger11 is an asyncio-compatible clone of swagger.py, capable of
+understanding Swagger 1.1 definitions (only).
+
+As swagger has been renamed to OpenAPI which by now has version 3.0
+(and has an actual specification – unlike Swagger 1.1) this library is
+(mostly) only usable with Asterisk, which still uses Swagger 1.1
+declarations.
+
+Aioswagger11 supports a WebSocket extension, allowing a WebSocket to
+be documented, and auto-generated WebSocket client code.
+
+from swagger.py:
+================
+
 Swagger.py is a Python library for using
-`Swagger <https://developers.helloreverb.com/swagger/>`__ defined API's.
+`Swagger <https://developers.helloreverb.com/swagger/>`__ defined APIs.
 
 Swagger itself is best described on the Swagger home page:
 
@@ -12,10 +26,7 @@ Swagger itself is best described on the Swagger home page:
 
 The `Swagger
 specification <https://github.com/wordnik/swagger-core/wiki>`__ defines
-how API's may be described using Swagger.
-
-Swagger.py also supports a WebSocket extension, allowing a WebSocket to
-be documented, and auto-generated WebSocket client code.
+how APIs may be described using Swagger.
 
 Usage
 -----
@@ -35,7 +46,7 @@ Or install from source using the ``setup.py`` script.
 API
 ===
 
-Swagger.py will dynamically build an object model from a Swagger-enabled
+aioswagger11 will dynamically build an object model from a Swagger-enabled
 RESTful API.
 
 Here is a simple example using the `Asterisk REST
@@ -84,23 +95,6 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
     if __name__ == "__main__":
         loop = asyncio.get_event_loop()
         loop.run_until_complete(main())
-
-swagger-codegen
-===============
-
-There are the beginnings of a Mustache-based code generator, but it's
-not functional... yet.
-
-.. Inspired by the original [swagger-codegen][] project, templates are
-   written using [Mustache][] templates ([Pystache][], specifically).
-   There are several important differences.
-
-    * The model that is fed into the mustache templates is almost
-      identical to Swagger's API resource listing and API declaration
-      model. The differences are listed [below](#model).
-    * The templates themselves are completely self contained, with the
-      logic to enrich the model being specified in `translate.py` in the
-      same directory as the `*.mustache` files.
 
 Data model
 ==========
@@ -152,10 +146,17 @@ the code coverage report. HTML versions of the reports are put in
 ::
 
     $ ./setup.py develop   # prep for development (install deps, launchers, etc.)
-    $ ./setup.py nosetests # run unit tests
+    $ ./setup.py pytest    # run unit tests
     $ ./setup.py bdist_egg # build distributable
 
 
+Testing
+=======
+
+Simply run ``python3 setup.py pytest``.
+
+Note that testing this module requires a version of httpretty that's been
+fixed to work with aiohttp.
 
 License
 -------
@@ -163,6 +164,9 @@ License
 Copyright (c) 2013, Digium, Inc.
 Copyright (c) 2018, Matthias Urlichs
 
-Swagger.py is licensed with a `BSD 3-Clause
+aioswagger11 is licensed with a `BSD 3-Clause
 License <http://opensource.org/licenses/BSD-3-Clause>`__.
+
+The current author humbly requests that you share any further bug fixes or
+enhancements to this code.
 
