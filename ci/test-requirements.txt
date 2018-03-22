@@ -1,3 +1,4 @@
 pytest
+pytest-asyncio
 pytest-cov
 git+https://github.com/M-o-a-T/HTTPretty.git
