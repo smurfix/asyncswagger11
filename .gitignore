@@ -9,3 +9,4 @@ build
 *.swp
 /.cache/
 /.eggs/
+/.pybuild/

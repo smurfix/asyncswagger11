@@ -1,0 +1,33 @@
+Source: aioswagger11
+Maintainer: Matthias Urlichs <matthias@urlichs.de>
+Section: python
+Priority: optional
+Build-Depends: dh-python, python3-setuptools, python3-all, debhelper (>= 9)
+Standards-Version: 3.9.6
+Homepage: https://github.com/M-o-a-T/aioswagger11
+
+Package: python3-aioswagger11
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: Asynchronous library for accessing Swagger-1.1-enabled APIs
+ About
+ -----
+ .
+ aioswagger11 is an asyncio-compatible clone of swagger.py, capable of
+ understanding Swagger 1.1 definitions (only).
+ .
+ As swagger has been renamed to OpenAPI which by now has version 3.0
+ (and has an actual specification – unlike Swagger 1.1) this library is
+ (mostly) only usable with Asterisk, which still uses Swagger 1.1
+ declarations.
+ .
+ Aioswagger11 supports a WebSocket extension, allowing a WebSocket to
+ be documented, and auto-generated WebSocket client code.
+ .
+ from swagger.py:
+ ================
+ .
+ Swagger.py is a Python library for using
+ `Swagger <https://developers.helloreverb.com/swagger/>`__ defined APIs.
+ .
+
