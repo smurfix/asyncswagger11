@@ -1,0 +1,24 @@
+language: python
+python:
+  - 3.6
+  - 3.7-dev
+
+matrix:
+  include:
+    - os: osx
+      language: generic
+      env: MACPYTHON=3.5.4
+    - os: osx
+      language: generic
+      env: MACPYTHON=3.6.3
+    - os: linux
+      language: python
+      python: 3.6
+      env: CHECK_DOCS=1
+    - os: linux
+      language: python
+      python: 3.6
+      env: CHECK_FORMATTING=1
+
+script:
+  - ci/travis.sh
