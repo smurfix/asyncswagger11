@@ -58,7 +58,7 @@ class Operation(object):
         :param kwargs: ARI operation arguments.
         :return: Implementation specific response or WebSocket connection
         """
-        log.info("%s?%r" % (self.json['nickname'], urllib.parse.urlencode(kwargs)))
+        log.debug("%s?%r" % (self.json['nickname'], urllib.parse.urlencode(kwargs)))
         method = self.json['httpMethod']
         uri = self.uri
         params = {}
@@ -95,7 +95,7 @@ class Operation(object):
             raise TypeError("'%s' does not have parameters %r" %
                             (self.json['nickname'], kwargs.keys()))
 
-        log.info("%s %s(%r)", method, uri, params)
+        log.debug("%s %s(%r)", method, uri, params)
 
         if data:
             data = json.dumps(data)
