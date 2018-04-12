@@ -13,6 +13,7 @@ import logging
 import urllib.parse
 import aiohttp
 import base64
+import json
 from aiohttp import web_exceptions
 
 log = logging.getLogger(__name__)
@@ -196,14 +197,22 @@ class AsynchronousHttpClient(HttpClient):
         response = await self.session.request(
             method=method, url=url, params=params, data=data, headers=headers)
         if response.status >= 400:
+            text = "".join(await response.text())
+            data = None
+            if response.status == 400:
+                try:
+                    data = json.loads(text)
+                except Exception:
+                    pass
             err = error_map.get(response.status,web_exceptions.HTTPError)(
                     headers=response.headers,
                     reason=response.reason,
                     body=None,
-                    text="".join(response.text()),
-                    content_type=None, # response.content_type,
+                    text=text,
+                    content_type=None,
                     )
             response.status_code = response.status
+            err.data = data
             err.response = response
             raise err
         return response
