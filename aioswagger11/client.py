@@ -122,7 +122,7 @@ class Resource(object):
     """
 
     def __init__(self, resource, http_client):
-        log.debug("Building resource '%s'" % resource['name'])
+        # log.debug("Building resource '%s'" % resource['name'])
         self.json = resource
         decl = resource['api_declaration']
         self.http_client = http_client
@@ -175,8 +175,8 @@ class Resource(object):
         :param api: API entry.
         :param operation: Operation.
         """
-        log.debug("Building operation %s.%s" % (
-            self.get_name(), operation['nickname']))
+        # log.debug("Building operation %s.%s" % (
+        #   self.get_name(), operation['nickname']))
         uri = decl['basePath'] + api['path']
         return Operation(uri, operation, self.http_client)
 
