@@ -1,3 +1,9 @@
+aioswagger11 (0.9.1-1) unstable; urgency=medium
+
+  * Minor bug fixes
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Thu, 12 Apr 2018 14:11:52 +0200
+
 aioswagger11 (0.9.0.1-2) smurf; urgency=medium
 
   * use Unstable
