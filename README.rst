@@ -82,19 +82,19 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
 
         ws = ari.events.eventWebsocket(app='hello')
 
-        async for msg_str in ws:
-            if msg.type in {aiohttp.WSMsgType.CLOSED, aiohttp.WSMsgType.CLOSING}:
+        async for msg in ws:
+            if not isinstance(msg, WebsocketDataMessage):
                 break
-            elif msg.type != aiohttp.WSMsgType.TEXT:
-                continue # ignore
+            elif not isinstance(msg, WebsocketTextMessage):
+                continue # ignore bytes
 
-            msg_json = json.loads(msg_str)
+            msg_json = json.loads(msg.data)
             if msg_json['type'] == 'StasisStart':
-                asyncio.ensure_future(run(ari,msg_json))
+                await nursery.start_soon(run,ari,msg_json)
 
     if __name__ == "__main__":
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(main())
+        trio.run(main)
+   
 
 Data model
 ==========
@@ -155,8 +155,11 @@ Testing
 
 Simply run ``python3 setup.py pytest``.
 
-Note that testing this module requires a version of httpretty that's been
-fixed to work with aiohttp.
+Note that standalone-testing this module currently is not possible.
+Previous versions required a hacked version of httpretty.
+
+TODO: use a local server instead.
+
 
 License
 -------

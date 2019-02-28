@@ -32,8 +32,8 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
     ],
-    tests_require=["pytest", "pytest-cov", "httpretty"],
-    install_requires=["aiohttp"],
+    tests_require=["pytest", "pytest-cov"],
+    install_requires=["asks"],
     entry_points="""
     [console_scripts]
     swagger11-codegen = aioswagger11.codegen:main

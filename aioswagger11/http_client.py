@@ -11,10 +11,9 @@
 
 import logging
 import urllib.parse
-import aiohttp
+import asks
 import base64
 import json
-from aiohttp import web_exceptions
 
 log = logging.getLogger(__name__)
 
@@ -157,7 +156,7 @@ class AsynchronousHttpClient(HttpClient):
     """Asynchronous HTTP client implementation.
     """
 
-    def __init__(self, username='', password='', loop=None, auth=None):
+    def __init__(self, username='', password='', auth=None):
         if auth is None:
             if username or password:
                 auth = BasicAuthenticator(None, username, password)
@@ -166,7 +165,7 @@ class AsynchronousHttpClient(HttpClient):
                 " use user+pass or auth, not both")
         self.authenticator = auth
         self.websockets = set()
-        self.session = aiohttp.ClientSession(loop=loop)
+        self.session = asks.Session(connections=3)
 
     def set_basic_auth(self, host, username, password):
         self.authenticator = BasicAuthenticator(
@@ -183,8 +182,8 @@ class AsynchronousHttpClient(HttpClient):
 
     async def request(self, method, url, params=None, data=None, headers=None):
         """Requests based implementation.
-        :return: aiohttp response
-        :rtype:  aiohttp.ClientResponse
+        :return: asks response
+        :rtype:  asks.Response
         """
         if self.authenticator is not None and \
             self.authenticator.matches(url):
@@ -219,8 +218,8 @@ class AsynchronousHttpClient(HttpClient):
 
     async def ws_connect(self, url, params=None):
         """Websocket-client based implementation.
-        :return: aiohttp WebSocket response
-        :rtype:  aiohttp.ClientWebSocketResponse
+        :return: trio_websockets connection
+        :rtype:  trio_websockets.ClientWebsocket
         """
         if self.authenticator is not None and \
             self.authenticator.matches(url):
@@ -232,7 +231,8 @@ class AsynchronousHttpClient(HttpClient):
             joined_params = "&".join(["%s=%s" % (k, v)
                                      for (k, v) in params.items()])
             url += "?%s" % joined_params
-        ret = await self.session.ws_connect(url)
+        # ret = await self.session.ws_connect(url)
+        ret = trio_websocket
         self.websockets.add(ret)
         return ret
 

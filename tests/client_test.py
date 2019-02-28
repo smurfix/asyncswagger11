@@ -11,9 +11,11 @@
 import httpretty
 import pytest
 
-from aioswagger11.client import SwaggerClient
+# HTTP status codes
+CREATED=201
+NO_CONTENT=204
 
-from aiohttp.web_exceptions import HTTPNoContent, HTTPCreated
+from aioswagger11.client import SwaggerClient
 
 # noinspection PyDocstring
 class TestClient:
@@ -59,12 +61,12 @@ class TestClient:
     async def test_post(self, uut):
         httpretty.register_uri(
             httpretty.POST, "http://swagger.py/swagger-test/pet",
-            status=HTTPCreated.status_code,
+            status=CREATED,
             content_type="application/json",
             body='{"id": 1234, "name": "Sparky"}')
 
         resp = await uut.pet.createPet(name='Sparky')
-        assert resp.status == HTTPCreated.status_code
+        assert resp.status == CREATED
         assert (await resp.json()) == {"id": 1234, "name": "Sparky"}
         assert httpretty.last_request().querystring == {'name': ['Sparky']}
 
@@ -72,9 +74,9 @@ class TestClient:
     async def test_delete(self, uut):
         httpretty.register_uri(
             httpretty.DELETE, "http://swagger.py/swagger-test/pet/1234",
-            status=HTTPNoContent.status_code)
+            status=NO_CONTENT)
 
         resp = await uut.pet.deletePet(petId=1234)
-        assert resp.status == HTTPNoContent.status_code
+        assert resp.status == NO_CONTENT)
         assert (await resp.read()) == b''
 
