@@ -119,9 +119,7 @@ async def json_load_url(http_client, url):
             fp.close()
     else:
         resp = await http_client.request('GET', url)
-        text = await resp.text()
-        jsons = json.loads(text)
-        return jsons
+        return resp.json()
 
 class Loader(object):
     """Abstraction for loading Swagger APIs.

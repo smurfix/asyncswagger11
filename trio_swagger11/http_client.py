@@ -14,14 +14,15 @@ import urllib.parse
 import asks
 import base64
 import json
+from asyncwebsockets import create_websocket
+
+from http import HTTPStatus
 
 log = logging.getLogger(__name__)
 
 error_map = {}
-for k in web_exceptions.__all__:
-    v = getattr(web_exceptions,k)
-    if isinstance(getattr(v,'status_code',None), int):
-        error_map[v.status_code] = v
+for k,v in HTTPStatus.__members__.items():
+    error_map[v] = k
 
 class HttpClient(object):
     """Interface for a minimal HTTP client.
@@ -195,25 +196,19 @@ class AsynchronousHttpClient(HttpClient):
 
         response = await self.session.request(
             method=method, url=url, params=params, data=data, headers=headers)
-        if response.status >= 400:
+        if response.status_code >= 400:
             text = "".join(await response.text())
             data = None
-            if response.status == 400:
+            if response.status_code == 400:
                 try:
                     data = json.loads(text)
                 except Exception:
                     pass
-            err = error_map.get(response.status,web_exceptions.HTTPError)(
-                    headers=response.headers,
-                    reason=response.reason,
-                    body=None,
-                    text=text,
-                    content_type=None,
-                    )
-            response.status_code = response.status
-            err.data = data
-            err.response = response
-            raise err
+            try:
+                response.raise_for_status()
+            except Exception as err:
+                err.data = data
+                raise
         return response
 
     async def ws_connect(self, url, params=None):
@@ -221,10 +216,10 @@ class AsynchronousHttpClient(HttpClient):
         :return: trio_websockets connection
         :rtype:  trio_websockets.ClientWebsocket
         """
+        if params is None:
+            params = {}
         if self.authenticator is not None and \
             self.authenticator.matches(url):
-            if params is None:
-                params = {}
             self.authenticator.apply(params, params)
 
         if params:
@@ -232,7 +227,7 @@ class AsynchronousHttpClient(HttpClient):
                                      for (k, v) in params.items()])
             url += "?%s" % joined_params
         # ret = await self.session.ws_connect(url)
-        ret = trio_websocket
+        ret = await create_websocket(url) # , headers=headers)
         self.websockets.add(ret)
         return ret
 
