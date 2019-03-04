@@ -194,8 +194,14 @@ class AsynchronousHttpClient(HttpClient):
                 headers = {}
             self.authenticator.apply(headers, params)
 
-        response = await self.session.request(
-            method=method, url=url, params=params, data=data, headers=headers)
+        # The socket might be closed … so just retry.
+        try:
+            response = await self.session.request(
+                method=method, url=url, params=params, data=data, headers=headers)
+        except asks.errors.BadHttpResponse:
+            response = await self.session.request(
+                method=method, url=url, params=params, data=data, headers=headers)
+
         if response.status_code >= 400:
             text = response.text
             data = None
