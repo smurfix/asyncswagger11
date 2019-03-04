@@ -197,7 +197,7 @@ class AsynchronousHttpClient(HttpClient):
         response = await self.session.request(
             method=method, url=url, params=params, data=data, headers=headers)
         if response.status_code >= 400:
-            text = "".join(await response.text())
+            text = response.text
             data = None
             if response.status_code == 400:
                 try:
