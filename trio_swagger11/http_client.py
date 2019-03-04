@@ -73,7 +73,7 @@ class HttpClient(object):
         raise NotImplementedError(
             "%s: Method not implemented", self.__class__.__name__)
 
-    def ws_connect(self, url, params=None):
+    def ws_connect(self, url, params=None, headers=None):
         """Create a WebSocket connection.
 
         :param url: WebSocket URL.
@@ -211,7 +211,7 @@ class AsynchronousHttpClient(HttpClient):
                 raise
         return response
 
-    async def ws_connect(self, url, params=None):
+    async def ws_connect(self, url, params=None, headers=None):
         """Websocket-client based implementation.
         :return: trio_websockets connection
         :rtype:  trio_websockets.ClientWebsocket
@@ -227,7 +227,7 @@ class AsynchronousHttpClient(HttpClient):
                                      for (k, v) in params.items()])
             url += "?%s" % joined_params
         # ret = await self.session.ws_connect(url)
-        ret = await create_websocket(url) # , headers=headers)
+        ret = await create_websocket(url, headers=headers)
         self.websockets.add(ret)
         return ret
 

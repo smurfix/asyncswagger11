@@ -107,7 +107,9 @@ class Operation(object):
             if data:
                 raise NotImplementedError(
                     "Sending body data with websockets not implmented")
-            ret = await self.http_client.ws_connect(uri, params=params)
+            headers = list(headers.items())
+            ret = await self.http_client.ws_connect(uri, params=params,
+                    headers=headers)
         else:
             ret = await self.http_client.request(
                 method, uri, params=params, headers=headers, data=data)
