@@ -14,7 +14,7 @@ from setuptools import setup
 
 setup(
     name="trio_swagger11",
-    version="0.9.1",
+    version="0.10.0",
     license="BSD 3-Clause License",
     description="Asynchronous library for accessing Swagger-1.1-enabled APIs",
     long_description=open(os.path.join(os.path.dirname(__file__),
