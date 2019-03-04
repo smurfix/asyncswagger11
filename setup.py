@@ -13,7 +13,7 @@ import os
 from setuptools import setup
 
 setup(
-    name="aioswagger11",
+    name="trio_swagger11",
     version="0.9.1",
     license="BSD 3-Clause License",
     description="Asynchronous library for accessing Swagger-1.1-enabled APIs",
@@ -21,8 +21,8 @@ setup(
                                        "README.rst")).read(),
     author="Matthias Urlichs",
     author_email="matthias@urlichs.de",
-    url="https://github.com/M-o-a-T/aioswagger11",
-    packages=["aioswagger11"],
+    url="https://github.com/M-o-a-T/trio_swagger11",
+    packages=["trio_swagger11"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -36,6 +36,6 @@ setup(
     install_requires=["asks"],
     entry_points="""
     [console_scripts]
-    swagger11-codegen = aioswagger11.codegen:main
+    swagger11-codegen = trio_swagger11.codegen:main
     """
 )

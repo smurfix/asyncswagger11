@@ -15,7 +15,7 @@ import pytest
 CREATED=201
 NO_CONTENT=204
 
-from aioswagger11.client import SwaggerClient
+from trio_swagger11.client import SwaggerClient
 
 # noinspection PyDocstring
 class TestClient:
@@ -24,17 +24,17 @@ class TestClient:
         with pytest.raises(AttributeError):
             uut.pet.doesNotExist()
 
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_bad_param(self, uut):
         with pytest.raises(TypeError):
             await uut.pet.listPets(doesNotExist='asdf')
 
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_missing_required(self, uut):
         with pytest.raises(TypeError):
             await uut.pet.createPet()
 
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_get(self, uut):
         httpretty.register_uri(
             httpretty.GET, "http://swagger.py/swagger-test/pet",
@@ -45,7 +45,7 @@ class TestClient:
         assert resp.status == 200
         assert (await resp.json()) == []
 
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_multiple(self, uut):
         httpretty.register_uri(
             httpretty.GET, "http://swagger.py/swagger-test/pet/find",
@@ -57,7 +57,7 @@ class TestClient:
         assert (await resp.json()) == []
         assert httpretty.last_request().querystring == {'species': ['cat,dog']}
 
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_post(self, uut):
         httpretty.register_uri(
             httpretty.POST, "http://swagger.py/swagger-test/pet",
@@ -70,7 +70,7 @@ class TestClient:
         assert (await resp.json()) == {"id": 1234, "name": "Sparky"}
         assert httpretty.last_request().querystring == {'name': ['Sparky']}
 
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_delete(self, uut):
         httpretty.register_uri(
             httpretty.DELETE, "http://swagger.py/swagger-test/pet/1234",

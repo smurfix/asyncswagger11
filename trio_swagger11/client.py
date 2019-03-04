@@ -5,7 +5,7 @@
 #
 
 """Asynchronous Swagger client library.
-   rewritten with use of asyncio libs
+   rewritten with use of trio libs
 """
 
 import json
@@ -13,11 +13,11 @@ import logging
 import os.path
 import re
 import urllib
-import aioswagger11
-import asyncio
+import trio_swagger11
+import trio
 
-from aioswagger11.http_client import AsynchronousHttpClient
-from aioswagger11.processors import WebsocketProcessor, SwaggerProcessor
+from trio_swagger11.http_client import AsynchronousHttpClient
+from trio_swagger11.processors import WebsocketProcessor, SwaggerProcessor
 
 log = logging.getLogger(__name__)
 
@@ -190,14 +190,12 @@ class SwaggerClient(object):
     :type  http_client: HttpClient
     """
 
-    def __init__(self, url=None, username='', password='', loop=None,
-                 http_client=None):
-        self.loop = loop or asyncio.get_event_loop()
+    def __init__(self, url=None, username='', password='', http_client=None):
         if not http_client:
-            http_client = AsynchronousHttpClient(username, password, self.loop)
+            http_client = AsynchronousHttpClient(username, password)
         self.http_client = http_client
         self.url = url
-        self.loader = aioswagger11.Loader(
+        self.loader = trio_swagger11.Loader(
             self.http_client, [WebsocketProcessor(), ClientProcessor()])
 
     async def init(self):

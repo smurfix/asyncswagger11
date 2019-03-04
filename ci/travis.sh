@@ -56,7 +56,7 @@ pip install -U pip setuptools wheel
 
 if [ "$CHECK_FORMATTING" = "1" ]; then
     pip install yapf==${YAPF_VERSION}
-    if ! yapf -rpd setup.py aioswagger11; then
+    if ! yapf -rpd setup.py trio_swagger11; then
         cat <<EOF
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -64,7 +64,7 @@ if [ "$CHECK_FORMATTING" = "1" ]; then
 Formatting problems were found (listed above). To fix them, run
 
    pip install yapf==${YAPF_VERSION}
-   yapf -rpi setup.py aioswagger11
+   yapf -rpi setup.py trio_swagger11
 
 in your local checkout.
 
@@ -89,7 +89,7 @@ else
     # Actual tests
     pip install -Ur ci/test-requirements.txt
 
-    pytest -W error -ra -v --pyargs tests --cov=aioswagger11 --cov-config=.coveragerc --verbose
+    pytest -W error -ra -v --pyargs tests --cov=trio_swagger11 --cov-config=.coveragerc --verbose
 
     bash <(curl -s https://codecov.io/bash)
 fi

@@ -6,9 +6,9 @@
 #
 
 import pytest
-import aioswagger11
+import trio_swagger11
 
-from aioswagger11 import swagger_model
+from trio_swagger11 import swagger_model
 
 
 class FakeProcessor(swagger_model.SwaggerProcessor):
@@ -17,25 +17,25 @@ class FakeProcessor(swagger_model.SwaggerProcessor):
 
 
 class TestLoader:
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_simple(self):
-        uut = await aioswagger11.load_file('test-data/1.1/simple/resources.json')
+        uut = await trio_swagger11.load_file('test-data/1.1/simple/resources.json')
         assert uut['swaggerVersion'] == '1.1'
         decl = uut['apis'][0]['api_declaration']
         assert len(decl['models']) == 1
         assert len(decl['models']['Simple']['properties']) == 1
 
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_processor(self):
-        uut = await aioswagger11.load_file('test-data/1.1/simple/resources.json',
+        uut = await trio_swagger11.load_file('test-data/1.1/simple/resources.json',
                                   processors=[FakeProcessor()])
         assert uut['swaggerVersion'] == '1.1'
         assert uut['processed'] is True
 
-    @pytest.mark.asyncio
+    @pytest.mark.trio
     async def test_missing(self):
         try:
-            await aioswagger11.load_file(
+            await trio_swagger11.load_file(
                 'test-data/1.1/missing_resource/resources.json')
             pytest.fail("Expected load failure b/c of missing file")
         except IOError:

@@ -2,8 +2,8 @@
 
 import httpretty as htpr
 import pytest
-from aioswagger11.client import SwaggerClient
-from aioswagger11.http_client import AsynchronousHttpClient
+from trio_swagger11.client import SwaggerClient
+from trio_swagger11.http_client import AsynchronousHttpClient
 
 @pytest.fixture
 def httpretty(request, event_loop):

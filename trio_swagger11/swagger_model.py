@@ -11,8 +11,8 @@ import json
 import os
 import urllib
 
-from aioswagger11.http_client import AsynchronousHttpClient
-from aioswagger11.processors import SwaggerProcessor, SwaggerError
+from trio_swagger11.http_client import AsynchronousHttpClient
+from trio_swagger11.processors import SwaggerProcessor, SwaggerError
 
 SWAGGER_VERSIONS = ["1.1"]
 

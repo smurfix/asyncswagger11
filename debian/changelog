@@ -1,16 +1,16 @@
-aioswagger11 (0.9.1-1) unstable; urgency=medium
+trio_swagger11 (0.9.1-1) unstable; urgency=medium
 
   * Minor bug fixes
 
  -- Matthias Urlichs <matthias@urlichs.de>  Thu, 12 Apr 2018 14:11:52 +0200
 
-aioswagger11 (0.9.0.1-2) smurf; urgency=medium
+trio_swagger11 (0.9.0.1-2) smurf; urgency=medium
 
   * use Unstable
 
  -- Matthias Urlichs <matthias@urlichs.de>  Thu, 22 Mar 2018 21:44:26 +0100
 
-aioswagger11 (0.9.0.1-1) smurf; urgency=low
+trio_swagger11 (0.9.0.1-1) smurf; urgency=low
 
   * source package automatically created by stdeb 0.8.5
 

@@ -4,4 +4,4 @@ swaggerpy
 .. toctree::
    :maxdepth: 4
 
-   aioswagger11
+   trio_swagger11

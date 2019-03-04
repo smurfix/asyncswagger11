@@ -1,7 +1,7 @@
 About
 -----
 
-aioswagger11 is an asyncio-compatible clone of swagger.py, capable of
+trio_swagger11 is a trio-compatible clone of swagger.py, capable of
 understanding Swagger 1.1 definitions (only).
 
 As swagger has been renamed to OpenAPI which by now has version 3.0
@@ -9,7 +9,7 @@ As swagger has been renamed to OpenAPI which by now has version 3.0
 (mostly) only usable with Asterisk, which still uses Swagger 1.1
 declarations.
 
-Aioswagger11 supports a WebSocket extension, allowing a WebSocket to
+Trio-swagger11 supports a WebSocket extension, allowing a WebSocket to
 be documented, and auto-generated WebSocket client code.
 
 from swagger.py:
@@ -35,7 +35,7 @@ Install the latest release from PyPI.
 
 ::
 
-    $ sudo pip install aioswagger11
+    $ sudo pip install trio_swagger11
 
 Or install from source using the ``setup.py`` script.
 
@@ -46,7 +46,7 @@ Or install from source using the ``setup.py`` script.
 API
 ===
 
-aioswagger11 will dynamically build an object model from a Swagger-enabled
+trio_swagger11 will dynamically build an object model from a Swagger-enabled
 RESTful API.
 
 Here is a simple example using the `Asterisk REST
@@ -57,11 +57,10 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
     #!/usr/bin/env python3
 
     import json
-    import asyncio
-    import aiohttp
+    import trio
 
-    from aioswagger11.client import SwaggerClient
-    from aioswagger11.http_client import AsynchronousHttpClient
+    from trio_swagger11.client import SwaggerClient
+    from trio_swagger11.http_client import AsynchronousHttpClient
 
     http_client = AsynchronousHttpClient()
     http_client.set_api_key('localhost', 'hey:peekaboo')
@@ -72,7 +71,7 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
         await ari.channels.play(channelId=channelId,
                         media='sound:hello-world')
         # In a real program you should wait for the PlaybackFinished event instead
-        await asyncio.sleep(3)
+        await trio.sleep(3)
         await ari.channels.continueInDialplan(channelId=channelId)
 
     async def main():
@@ -167,7 +166,7 @@ License
 Copyright (c) 2013, Digium, Inc.
 Copyright (c) 2018, Matthias Urlichs
 
-aioswagger11 is licensed with a `BSD 3-Clause
+trio_swagger11 is licensed with a `BSD 3-Clause
 License <http://opensource.org/licenses/BSD-3-Clause>`__.
 
 The current author humbly requests that you share any further bug fixes or
