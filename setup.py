@@ -37,6 +37,7 @@ setup(
     ],
     tests_require=["pytest", "pytest-cov"],
     install_requires=["asks"],
+    setup_requires=["setuptools_scm"],
     entry_points="""
     [console_scripts]
     swagger11-codegen = trio_swagger11.codegen:main
