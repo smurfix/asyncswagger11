@@ -1,3 +1,10 @@
+trio-swagger11 (0.11.0-1) unstable; urgency=medium
+
+  * Major fixes
+  * Versioning by git tags
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Mon, 18 Mar 2019 11:23:08 +0100
+
 trio-swagger11 (0.10.1-1) unstable; urgency=medium
 
   * Small fixes
