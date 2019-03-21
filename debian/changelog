@@ -1,3 +1,9 @@
+trio-swagger11 (0.11.1-1) unstable; urgency=medium
+
+  * `asks` sessions don't have `aclose`, they have an async `close`.
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Thu, 21 Mar 2019 13:34:34 +0100
+
 trio-swagger11 (0.11.0-2) unstable; urgency=medium
 
   * Fix tagging

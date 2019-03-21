@@ -179,7 +179,7 @@ class AsynchronousHttpClient(HttpClient):
     async def close(self):
         for websocket in self.websockets:
             await websocket.close()
-        await self.session.aclose()
+        await self.session.close()
 
     async def request(self, method, url, params=None, data=None, headers=None):
         """Requests based implementation.
