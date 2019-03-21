@@ -77,6 +77,6 @@ class TestClient:
             status=NO_CONTENT)
 
         resp = await uut.pet.deletePet(petId=1234)
-        assert resp.status == NO_CONTENT)
+        assert resp.status == NO_CONTENT
         assert (await resp.read()) == b''
 

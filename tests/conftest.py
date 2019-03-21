@@ -1,37 +1,30 @@
 #!/usr/bin/env python
 
-import httpretty as htpr
 import pytest
 from trio_swagger11.client import SwaggerClient
 from trio_swagger11.http_client import AsynchronousHttpClient
 
 @pytest.fixture
-def httpretty(request, event_loop):
+def httpretty(request):
     """Setup httpretty; create ARI client.
         """
     #super(AriTestCase, self).setUp()
-    htpr.enable()
-    request.instance.setUp(event_loop)
+    request.instance.setUp()
 
     yield 123
 
-    request.instance.tearDown(event_loop)
-    htpr.disable()
-    htpr.reset()
+    request.instance.tearDown()
 
 @pytest.fixture
-def client(event_loop, request):
-    htpr.enable()
+async def client(request):
     auth = getattr(request.function,'auth',None)
-    client = AsynchronousHttpClient(loop=event_loop, auth=auth)
+    client = AsynchronousHttpClient(auth=auth)
     yield client
-    event_loop.run_until_complete(client.close())
-    htpr.disable()
+    await client.close()
 
 @pytest.fixture
-def uut(event_loop):
+async def uut():
     # Default handlers for all swagger.py access
-    htpr.enable()
     resource_listing = {
         "swaggerVersion": "1.1",
         "basePath": "http://swagger.py/swagger-test",
@@ -105,9 +98,8 @@ def uut(event_loop):
     }
 
     client = SwaggerClient(url=resource_listing)
-    event_loop.run_until_complete(client.init())
+    await client.init()
     yield client
-    event_loop.run_until_complete(client.close())
+    await client.close()
 
-    htpr.disable()
 
