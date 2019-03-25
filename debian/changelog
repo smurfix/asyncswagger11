@@ -1,3 +1,9 @@
+trio-swagger11 (0.11.2-1) unstable; urgency=medium
+
+  * Flush session
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Mon, 25 Mar 2019 10:30:50 +0100
+
 trio-swagger11 (0.11.1-1) unstable; urgency=medium
 
   * `asks` sessions don't have `aclose`, they have an async `close`.

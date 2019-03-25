@@ -199,6 +199,7 @@ class AsynchronousHttpClient(HttpClient):
             response = await self.session.request(
                 method=method, url=url, params=params, data=data, headers=headers)
         except asks.errors.BadHttpResponse:
+            await self.session.close()  # this flushes any open connections
             response = await self.session.request(
                 method=method, url=url, params=params, data=data, headers=headers)
 
