@@ -1,3 +1,9 @@
+asyncswagger11 (0.12.1-2) unstable; urgency=medium
+
+  * Replace old
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Mon, 03 Jun 2019 18:39:49 +0200
+
 asyncswagger11 (0.12.1-1) unstable; urgency=medium
 
   * Rename to asyncswagger11

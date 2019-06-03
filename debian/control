@@ -9,6 +9,7 @@ Homepage: https://github.com/M-o-a-T/asyncswagger11
 Package: python3-asyncswagger11
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}
+Replaces: python3-trio-swagger11
 Description: Asynchronous library for accessing Swagger-1.1-enabled APIs
  asyncswagger11 is an anyio-compatible clone of swagger.py, capable of
  understanding Swagger 1.1 definitions (only).
