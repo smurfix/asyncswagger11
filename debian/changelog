@@ -1,3 +1,9 @@
+asyncswagger11 (0.12.1-1) unstable; urgency=medium
+
+  * Rename to asyncswagger11
+
+ -- Matthias Urlichs <matthias@urlichs.de>  Mon, 03 Jun 2019 18:29:24 +0200
+
 trio-swagger11 (0.11.2-1) unstable; urgency=medium
 
   * Flush session

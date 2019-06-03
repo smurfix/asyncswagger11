@@ -10,7 +10,7 @@ from asyncswagger11.http_client import AsynchronousHttpClient, \
 
 # noinspection PyDocstring
 class TestAsynchronousClient:
-    @pytest.mark.trio
+    @pytest.mark.anyio
     async def test_simple_get(self, client):
         httpretty.register_uri(
             httpretty.GET, "http://swagger.py/client-test",
@@ -23,7 +23,7 @@ class TestAsynchronousClient:
         assert httpretty.last_request().querystring == {'foo': ['bar']}
     test_simple_get.basic_auth = ("swagger.py", 'unit', 'peekaboo')
 
-    @pytest.mark.trio
+    @pytest.mark.anyio
     async def test_real_post(self, client):
         httpretty.register_uri(
             httpretty.POST, "http://swagger.py/client-test",
@@ -37,7 +37,7 @@ class TestAsynchronousClient:
                 'application/x-www-form-urlencoded'
         assert httpretty.last_request().body == b"foo=bar"
 
-    @pytest.mark.trio
+    @pytest.mark.anyio
     async def test_basic_auth(self, client):
         httpretty.register_uri(
             httpretty.GET, "http://swagger.py/client-test",
@@ -53,7 +53,7 @@ class TestAsynchronousClient:
     test_basic_auth.auth = BasicAuthenticator(host="swagger.py",
             username="unit", password='peekaboo')
 
-    @pytest.mark.trio
+    @pytest.mark.anyio
     async def test_api_key(self, client):
         httpretty.register_uri(
             httpretty.GET, "http://swagger.py/client-test",
@@ -68,7 +68,7 @@ class TestAsynchronousClient:
     test_api_key.auth = ApiKeyAuthenticator("swagger.py",
                         'abc123', param_name='test')
 
-    @pytest.mark.trio
+    @pytest.mark.anyio
     async def test_auth_leak(self, client):
         httpretty.register_uri(
             httpretty.GET, "http://hackerz.py",

@@ -220,8 +220,8 @@ class AsynchronousHttpClient(HttpClient):
 
     async def ws_connect(self, url, params=None, headers=None):
         """Websocket-client based implementation.
-        :return: trio_websockets connection
-        :rtype:  trio_websockets.ClientWebsocket
+        :return: asyncwebsockets connection
+        :rtype:  asyncwebsockets.ClientWebsocket
         """
         if params is None:
             params = {}

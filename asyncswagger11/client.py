@@ -5,7 +5,7 @@
 #
 
 """Asynchronous Swagger client library.
-   rewritten with use of trio libs
+   rewritten with use of anyio libs
 """
 
 import json
@@ -14,7 +14,6 @@ import os.path
 import re
 import urllib
 import asyncswagger11
-import trio
 
 from asyncswagger11.http_client import AsynchronousHttpClient
 from asyncswagger11.processors import WebsocketProcessor, SwaggerProcessor

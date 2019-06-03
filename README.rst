@@ -1,7 +1,7 @@
 About
 -----
 
-asyncswagger11 is a trio-compatible clone of swagger.py, capable of
+asyncswagger11 is an anyio-compatible clone of swagger.py, capable of
 understanding Swagger 1.1 definitions (only).
 
 As swagger has been renamed to OpenAPI which by now has version 3.0
@@ -57,7 +57,7 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
     #!/usr/bin/env python3
 
     import json
-    import trio
+    import anyio
 
     from asyncswagger11.client import SwaggerClient
     from asyncswagger11.http_client import AsynchronousHttpClient
@@ -71,7 +71,7 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
         await ari.channels.play(channelId=channelId,
                         media='sound:hello-world')
         # In a real program you should wait for the PlaybackFinished event instead
-        await trio.sleep(3)
+        await anyio.sleep(3)
         await ari.channels.continueInDialplan(channelId=channelId)
 
     async def main():
@@ -92,7 +92,7 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
                 await nursery.start_soon(run,ari,msg_json)
 
     if __name__ == "__main__":
-        trio.run(main)
+        anyio.run(main)
    
 
 Data model

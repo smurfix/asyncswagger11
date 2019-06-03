@@ -4,4 +4,4 @@
 /*.debhelper-build-stamp
 /*.substvars
 /debhelper-build-stamp
-/python3-trio-swagger11
+/python3-asyncswagger11
