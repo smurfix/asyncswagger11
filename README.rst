@@ -1,7 +1,7 @@
 About
 -----
 
-trio_swagger11 is a trio-compatible clone of swagger.py, capable of
+asyncswagger11 is a trio-compatible clone of swagger.py, capable of
 understanding Swagger 1.1 definitions (only).
 
 As swagger has been renamed to OpenAPI which by now has version 3.0
@@ -9,7 +9,7 @@ As swagger has been renamed to OpenAPI which by now has version 3.0
 (mostly) only usable with Asterisk, which still uses Swagger 1.1
 declarations.
 
-Trio-swagger11 supports a WebSocket extension, allowing a WebSocket to
+Asyncswagger11 supports a WebSocket extension, allowing a WebSocket to
 be documented, and auto-generated WebSocket client code.
 
 from swagger.py:
@@ -35,7 +35,7 @@ Install the latest release from PyPI.
 
 ::
 
-    $ sudo pip install trio_swagger11
+    $ sudo pip install asyncswagger11
 
 Or install from source using the ``setup.py`` script.
 
@@ -46,7 +46,7 @@ Or install from source using the ``setup.py`` script.
 API
 ===
 
-trio_swagger11 will dynamically build an object model from a Swagger-enabled
+asyncswagger11 will dynamically build an object model from a Swagger-enabled
 RESTful API.
 
 Here is a simple example using the `Asterisk REST
@@ -59,8 +59,8 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
     import json
     import trio
 
-    from trio_swagger11.client import SwaggerClient
-    from trio_swagger11.http_client import AsynchronousHttpClient
+    from asyncswagger11.client import SwaggerClient
+    from asyncswagger11.http_client import AsynchronousHttpClient
 
     http_client = AsynchronousHttpClient()
     http_client.set_api_key('localhost', 'hey:peekaboo')
@@ -166,7 +166,7 @@ License
 Copyright (c) 2013, Digium, Inc.
 Copyright (c) 2018, Matthias Urlichs
 
-trio_swagger11 is licensed with a `BSD 3-Clause
+asyncswagger11 is licensed with a `BSD 3-Clause
 License <http://opensource.org/licenses/BSD-3-Clause>`__.
 
 The current author humbly requests that you share any further bug fixes or

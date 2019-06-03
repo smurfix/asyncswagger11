@@ -4,7 +4,7 @@ client Package
 :mod:`client` Package
 ---------------------
 
-.. automodule:: trio_swagger11.client
+.. automodule:: asyncswagger11.client
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ client Package
 :mod:`client` Module
 --------------------
 
-.. automodule:: trio_swagger11.client.client
+.. automodule:: asyncswagger11.client.client
     :members:
     :undoc-members:
     :show-inheritance:

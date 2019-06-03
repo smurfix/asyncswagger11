@@ -4,7 +4,7 @@ import base64
 import pytest
 import httpretty
 
-from trio_swagger11.http_client import AsynchronousHttpClient, \
+from asyncswagger11.http_client import AsynchronousHttpClient, \
     ApiKeyAuthenticator, BasicAuthenticator
 
 

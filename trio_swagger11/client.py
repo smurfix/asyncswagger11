@@ -13,11 +13,11 @@ import logging
 import os.path
 import re
 import urllib
-import trio_swagger11
+import asyncswagger11
 import trio
 
-from trio_swagger11.http_client import AsynchronousHttpClient
-from trio_swagger11.processors import WebsocketProcessor, SwaggerProcessor
+from asyncswagger11.http_client import AsynchronousHttpClient
+from asyncswagger11.processors import WebsocketProcessor, SwaggerProcessor
 
 log = logging.getLogger(__name__)
 
@@ -197,7 +197,7 @@ class SwaggerClient(object):
             http_client = AsynchronousHttpClient(username, password)
         self.http_client = http_client
         self.url = url
-        self.loader = trio_swagger11.Loader(
+        self.loader = asyncswagger11.Loader(
             self.http_client, [WebsocketProcessor(), ClientProcessor()])
 
     async def init(self):

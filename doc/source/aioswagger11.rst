@@ -1,10 +1,10 @@
 swaggerpy Package
 =================
 
-:mod:`trio_swagger11` Package
+:mod:`asyncswagger11` Package
 ------------------------
 
-.. automodule:: trio_swagger11.__init__
+.. automodule:: asyncswagger11.__init__
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ swaggerpy Package
 :mod:`codegen` Module
 ---------------------
 
-.. automodule:: trio_swagger11.codegen
+.. automodule:: asyncswagger11.codegen
     :members:
     :undoc-members:
     :show-inheritance:
@@ -20,7 +20,7 @@ swaggerpy Package
 :mod:`processors` Module
 ------------------------
 
-.. automodule:: trio_swagger11.processors
+.. automodule:: asyncswagger11.processors
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,7 +28,7 @@ swaggerpy Package
 :mod:`swagger_model` Module
 ---------------------------
 
-.. automodule:: trio_swagger11.swagger_model
+.. automodule:: asyncswagger11.swagger_model
     :members:
     :undoc-members:
     :show-inheritance:
@@ -38,5 +38,5 @@ Subpackages
 
 .. toctree::
 
-    trio_swagger11.client
+    asyncswagger11.client
 

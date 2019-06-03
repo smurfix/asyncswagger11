@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import pytest
-from trio_swagger11.client import SwaggerClient
-from trio_swagger11.http_client import AsynchronousHttpClient
+from asyncswagger11.client import SwaggerClient
+from asyncswagger11.http_client import AsynchronousHttpClient
 
 @pytest.fixture
 def httpretty(request):

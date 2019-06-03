@@ -15,7 +15,7 @@ import pytest
 CREATED=201
 NO_CONTENT=204
 
-from trio_swagger11.client import SwaggerClient
+from asyncswagger11.client import SwaggerClient
 
 # noinspection PyDocstring
 class TestClient:

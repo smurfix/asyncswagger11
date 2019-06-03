@@ -13,7 +13,7 @@ import os
 from setuptools import setup
 
 setup(
-    name="trio_swagger11",
+    name="asyncswagger11",
     use_scm_version={
         "version_scheme": "guess-next-dev",
         "local_scheme": "dirty-tag"
@@ -24,8 +24,8 @@ setup(
                                        "README.rst")).read(),
     author="Matthias Urlichs",
     author_email="matthias@urlichs.de",
-    url="https://github.com/M-o-a-T/trio_swagger11",
-    packages=["trio_swagger11"],
+    url="https://github.com/M-o-a-T/asyncswagger11",
+    packages=["asyncswagger11"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -40,6 +40,6 @@ setup(
     setup_requires=["setuptools_scm"],
     entry_points="""
     [console_scripts]
-    swagger11-codegen = trio_swagger11.codegen:main
+    swagger11-codegen = asyncswagger11.codegen:main
     """
 )
