@@ -6,17 +6,12 @@ variables:
   USER: "root"
 
 before_script:
-  - 'find ../ -iname "*.changes" -maxdepth 1 -print -delete'
-  - 'eval $(ssh-agent)'
-  - 'dch -v "${CI_COMMIT_TAG}.$(lsb_release -s -c)" -D "$(lsb_release -s -c)" -b "Autobuild on Tag ${CI_COMMIT_TAG}"'
-  - 'head debian/changelog'
-  - '[ -f "/usr/bin/git" ] && rm /usr/bin/git'
-  - 'echo "deb http://apt.noris.net $(lsb_release -s -c) main noris" >/etc/apt/sources.list.d/noris.list'
-  - 'apt-get update'
-  - 'dpkg-source -b .'
-  - "mk-build-deps --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes --allow-unauthenticated' debian/control"
+  - "rm -rf ../.mgr"
+  - "git clone https://gitlab.noris.net/${CI_PROJECT_NAMESPACE}/sourcemgr ../.mgr"
+  - "(cd ../.mgr; git show --oneline)"
+  - "/bin/bash -x ../.mgr/gitlab-ci"
 stretch:
-  only:
+  only: 
     - tags
   image: 'docker-registry.noris.net/oci/debbuilder:stretch'
   script:
