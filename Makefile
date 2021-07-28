@@ -1,17 +1,13 @@
 #!/usr/bin/make -f
 
-all:
-	@echo "Please use 'python setup.py'."
-	@exit 1
+PACKAGE = asyncswagger11
 
-tag:	
-	./mktag
+ifneq ($(wildcard /usr/share/sourcemgr/make/py),)
+include /usr/share/sourcemgr/make/py
+# availabe via http://github.com/smurfix/sourcemgr
 
-pypi:	tag
-	python3 setup.py sdist upload
-	## version depends on tag, so re-tagging doesn't make sense
-
-upload: pypi
-	git push --tags
-
-.PHONY: all tag pypi upload
+else
+%:
+		@echo "Please use 'python setup.py'."
+		@exit 1
+endif
