@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm[toml]>=7.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asyncswagger11"
+authors = [
+    { name = "Matt Jordan", email = "mjordan@digium.com" },
+    { name = "Matthias Urlichs", email = "matthias@urlichs.de" },
+]
+license = { file = "LICENSE.txt" }
+description = "Asynchronous library for accessing Swagger-1.1-enabled APIs"
+readme = "README.rst"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+keywords = [ "swagger" ]
+urls = { Homepage = "https://github.com/M-o-a-T/asyncswagger11" }
+dependencies = [
+    "httpx",
+]
+dynamic = ["version"]
+
+
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "mocket",
+]
+
+[tool.setuptools_scm]
