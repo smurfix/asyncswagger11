@@ -11,7 +11,7 @@
 
 import logging
 import urllib.parse
-import asks
+import httpx
 import base64
 import json
 from asyncwebsockets import create_websocket
@@ -166,7 +166,8 @@ class AsynchronousHttpClient(HttpClient):
                 " use user+pass or auth, not both")
         self.authenticator = auth
         self.websockets = set()
-        self.session = asks.Session(connections=3)
+        limits = httpx.Limits(max_keepalive_connections=1, max_connections=3)
+        self.session = httpx.AsyncClient(timeout=600, limits=limits)
 
     def set_basic_auth(self, host, username, password):
         self.authenticator = BasicAuthenticator(
@@ -179,12 +180,12 @@ class AsynchronousHttpClient(HttpClient):
     async def close(self):
         for websocket in self.websockets:
             await websocket.close()
-        await self.session.close()
+        await self.session.aclose()
 
     async def request(self, method, url, params=None, data=None, headers=None):
         """Requests based implementation.
-        :return: asks response
-        :rtype:  asks.Response
+        :return: httpx response
+        :rtype:  httpx.Response
         """
         if self.authenticator is not None and \
             self.authenticator.matches(url):
@@ -198,8 +199,8 @@ class AsynchronousHttpClient(HttpClient):
         try:
             response = await self.session.request(
                 method=method, url=url, params=params, data=data, headers=headers)
-        except asks.errors.BadHttpResponse:
-            await self.session.close()  # this flushes any open connections
+        except httpx.HTTPError:
+            await self.session.aclose()  # this flushes any open connections
             response = await self.session.request(
                 method=method, url=url, params=params, data=data, headers=headers)
 
