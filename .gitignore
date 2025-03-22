@@ -1,3 +1,4 @@
+/debian/
 *.egg-info/
 *.egg
 *.pyc
