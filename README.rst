@@ -35,13 +35,14 @@ Install the latest release from PyPI.
 
 ::
 
-    $ sudo pip install asyncswagger11
+    $ pip install asyncswagger11
 
-Or install from source using the ``setup.py`` script.
+Or install from source:
 
 ::
 
-    $ sudo ./setup.py install
+    $ python3 -mbuild
+
 
 API
 ===
@@ -75,21 +76,21 @@ Interface <https://wiki.asterisk.org/wiki/display/AST/Asterisk+12+ARI>`__
         await ari.channels.continueInDialplan(channelId=channelId)
 
     async def main():
-        ari = SwaggerClient(
+        async with SwaggerClient(
             "http://localhost:8088/ari/api-docs/resources.json",
-            http_client=http_client)
+            http_client=http_client) as ari:
 
-        ws = ari.events.eventWebsocket(app='hello')
+            ws = ari.events.eventWebsocket(app='hello')
 
-        async for msg in ws:
-            if not isinstance(msg, WebsocketDataMessage):
-                break
-            elif not isinstance(msg, WebsocketTextMessage):
-                continue # ignore bytes
+            async for msg in ws:
+                if not isinstance(msg, WebsocketDataMessage):
+                    break
+                elif not isinstance(msg, WebsocketTextMessage):
+                    continue # ignore bytes
 
-            msg_json = json.loads(msg.data)
-            if msg_json['type'] == 'StasisStart':
-                await nursery.start_soon(run,ari,msg_json)
+                msg_json = json.loads(msg.data)
+                if msg_json['type'] == 'StasisStart':
+                    await nursery.start_soon(run,ari,msg_json)
 
     if __name__ == "__main__":
         anyio.run(main)

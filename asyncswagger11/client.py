@@ -211,6 +211,13 @@ class SwaggerClient(object):
             resource['name']: Resource(resource, self.http_client)
             for resource in self.api_docs['apis']}
 
+    async def __aenter__(self):
+        await self.init()
+        return self
+
+    async def __aexit(self, *err):
+        pass
+
     def __repr__(self):
         try:
             return "%s(%s)" % (self.__class__.__name__, self.api_docs['basePath'])
