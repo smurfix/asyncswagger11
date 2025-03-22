@@ -27,14 +27,14 @@ async def uut():
     # Default handlers for all swagger.py access
     resource_listing = {
         "swaggerVersion": "1.1",
-        "basePath": "http://swagger.py/swagger-test",
+        "basePath": "http://swagger.py.invalid/swagger-test",
         "apis": [
             {
                 "path": "/api-docs/pet.json",
                 "description": "Test loader when missing a file",
                 "api_declaration": {
                     "swaggerVersion": "1.1",
-                    "basePath": "http://swagger.py/swagger-test",
+                    "basePath": "http://swagger.py.invalid/swagger-test",
                     "resourcePath": "/pet.json",
                     "apis": [
                         {
